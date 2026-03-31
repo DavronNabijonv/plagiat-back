@@ -2,5 +2,5 @@ PAYME_ID = "6897329525fe22a89137646f"
 PAYME_KEY = "M@JcPPCVZDXD%3gjT&9@Yy31ZjzVVHssZPZe"
 PAYME_ACCOUNT_FIELD = "order_id"
 PAYME_AMOUNT_FIELD = "total_price"
-PAYME_ACCOUNT_MODEL = "shared.models.Order"
+PAYME_ACCOUNT_MODEL = "core.apps.shared.models.Order"
 PAYME_ONE_TIME_PAYMENT = True
