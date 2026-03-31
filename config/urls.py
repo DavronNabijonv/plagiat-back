@@ -28,7 +28,8 @@ urlpatterns = [
 
     path('api/v1/', include(
         [
-            path("users/", include("core.apps.users.urls"))
+            path("users/", include("core.apps.users.urls")),
+            path("shared/", include("core.apps.shared.urls")),
         ]
     ))
 ]
