@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from core.apps.users.views.payme import PaymeCallBackAPIView
 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -31,7 +32,8 @@ urlpatterns = [
             path("users/", include("core.apps.users.urls")),
             path("shared/", include("core.apps.shared.urls")),
         ]
-    ))
+    )),
+    path("payment/update/", PaymeCallBackAPIView.as_view()),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

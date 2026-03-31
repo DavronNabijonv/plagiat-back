@@ -8,6 +8,7 @@ from config.conf.logs import *
 from config.conf.modern_drf_swagger import *
 from config.conf.rest_framework import *
 from config.conf.simplejwt import *
+from config.conf.payme import *
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,6 +32,7 @@ INSTALLED_APPS = [
     'modern_drf_swagger',
     'drf_yasg',
     'corsheaders',
+    'payme',
     # local apps
     'core.apps.users',
     'core.apps.shared',
@@ -112,3 +114,5 @@ MEDIA_ROOT = BASE_DIR / 'resources/media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
+
+PAYTECH_LICENSE_API_KEY='e472d69e-27b5-4d64-be96-e63a192e0f03'
