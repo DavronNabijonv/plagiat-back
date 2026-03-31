@@ -1,5 +1,5 @@
-PAYME_ID = "6897329525fe22a89137646f"
-PAYME_KEY = "M@JcPPCVZDXD%3gjT&9@Yy31ZjzVVHssZPZe"
+PAYME_ID = "69cbe18ba92166ccd7f7e961"
+PAYME_KEY = "pqOuRrVvjXX3Z&5R?e4021tmKsisyU0d%niW"
 PAYME_ACCOUNT_FIELD = "order_id"
 PAYME_AMOUNT_FIELD = "total_price"
 PAYME_ACCOUNT_MODEL = "core.apps.shared.models.Order"
