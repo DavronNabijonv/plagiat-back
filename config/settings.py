@@ -1,4 +1,5 @@
 from pathlib import Path
+from config.env import env
 
 from config.conf.cors_headers import *
 from config.conf.drf_yasg import *
@@ -10,6 +11,7 @@ from config.conf.simplejwt import *
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+env.read_env(BASE_DIR / ".env")
 
 SECRET_KEY = env.str("SECRET_KEY")
 DEBUG = env.str("DEBUG")
@@ -29,6 +31,9 @@ INSTALLED_APPS = [
     'modern_drf_swagger',
     'drf_yasg',
     'corsheaders',
+    # local apps
+    'core.apps.users',
+    'core.apps.shared',
 ]
 
 MIDDLEWARE = [
@@ -106,3 +111,4 @@ MEDIA_URL = 'resources/media/'
 MEDIA_ROOT = BASE_DIR / 'resources/media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = 'users.User'
