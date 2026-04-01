@@ -31,3 +31,19 @@ class DocumentListApiView(GenericAPIView):
             return Response(serializer.data)
         except Exception as e:
             return Response({'error': str(e)}, status=500)
+
+
+
+class DocumentDetailApiView(GenericAPIView):
+    serializer_class = DocumentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        try:
+            document = Document.objects.filter(user=request.user, id=id).first()
+            if not document:
+                return Response({'error': 'Document not found'}, status=404)
+            serializer = self.get_serializer(document)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
