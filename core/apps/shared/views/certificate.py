@@ -87,7 +87,7 @@ def certificate_pdf_view(request):
         string=html_string,
         base_url=request.build_absolute_uri(),
     ).write_pdf(
-        stylesheets=[CSS(string="@page { size: 1200px 800px; margin: 0; }")]
+        stylesheets=[CSS(string="@page { size: 1500px 1000px; margin: 0; }")]
     )
 
     response = HttpResponse(pdf, content_type="application/pdf")
