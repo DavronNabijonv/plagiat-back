@@ -10,5 +10,6 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:8000",
     "https://plaget.felixits.uz",
-    "https://plagat.vercel.app"
+    "https://plagat.vercel.app",
+    "https://api.anti-plagiat.uz"
 ]
