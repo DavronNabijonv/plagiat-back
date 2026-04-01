@@ -30,10 +30,10 @@ def _build_context(originality, ai, plagiat, quote):
         "plagiat":             plagiat,
         "quote":               quote,
         "circumference":       CIRCUMFERENCE,
-        "originality_dash":    round(CIRCUMFERENCE * originality / 100, 2),
-        "ai_dash":             round(CIRCUMFERENCE * ai          / 100, 2),
-        "plagiat_dash":        round(CIRCUMFERENCE * plagiat     / 100, 2),
-        "quote_dash":          round(CIRCUMFERENCE * quote       / 100, 2),
+        "originality_dash":    round(CIRCUMFERENCE * 100 / 100, 2),
+        "ai_dash":             round(CIRCUMFERENCE * 100          / 100, 2),
+        "plagiat_dash":        round(CIRCUMFERENCE * 100     / 100, 2),
+        "quote_dash":          round(CIRCUMFERENCE * 100       / 100, 2),
     }
 
 
@@ -87,7 +87,7 @@ def certificate_pdf_view(request):
         string=html_string,
         base_url=request.build_absolute_uri(),
     ).write_pdf(
-        stylesheets=[CSS(string="@page { size: A4 landscape; margin: 0; }")]
+        stylesheets=[CSS(string="@page { size: 1200px 800px; margin: 0; }")]
     )
 
     response = HttpResponse(pdf, content_type="application/pdf")
