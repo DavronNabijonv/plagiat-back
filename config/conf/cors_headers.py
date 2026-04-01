@@ -1,5 +1,3 @@
-from config.env import env
-
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
