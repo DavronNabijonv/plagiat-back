@@ -38,7 +38,7 @@ class DocumentDetailApiView(GenericAPIView):
     serializer_class = DocumentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request, id):
         try:
             document = Document.objects.filter(user=request.user, id=id).first()
             if not document:
