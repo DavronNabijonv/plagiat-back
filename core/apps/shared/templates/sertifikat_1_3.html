@@ -1,0 +1,815 @@
+{% load static %}
+
+<!doctype html>
+<html lang="uz">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Anti-Plagiat.uz — Sertifikat</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: "Montserrat", Arial, sans-serif;
+                background: #0d1a2e;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 30px;
+            }
+
+            .cert {
+                width: 1200px;
+                height: 800px;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 40px 100px rgba(0, 0, 0, 0.65);
+            }
+
+            .bg {
+                position: absolute;
+                inset: 0;
+                background-image: url("./5754469 (1).png");
+                background-size: cover;
+                background-position: center;
+            }
+            .bg-white {
+                position: absolute;
+                inset: 0;
+                background: rgba(255, 255, 255, 0.92);
+            }
+
+            .deco {
+                position: absolute;
+                top: 0;
+                z-index: 5;
+            }
+            .deco-left {
+                left: 0;
+            }
+            .deco-right {
+                right: 0;
+            }
+
+            .bar-top {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 116px;
+                background: linear-gradient(
+                    135deg,
+                    #071535 0%,
+                    #0d2a5e 55%,
+                    #103378 100%
+                );
+                border-bottom: 3px solid #00c8e6;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 48px;
+                z-index: 10;
+            }
+
+            .logo-img {
+                height: 74px;
+                display: block;
+            }
+
+            .bar-title {
+                text-align: center;
+            }
+            .cert-no {
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                color: rgba(150, 200, 255, 0.6);
+                margin-bottom: 5px;
+            }
+            .cert-word {
+                font-family: "Playfair Display", serif;
+                font-size: 66px;
+                font-weight: 800;
+                color: #fff;
+                letter-spacing: 16px;
+                text-transform: uppercase;
+                line-height: 1;
+            }
+            .cert-word em {
+                color: #00c8e6;
+                font-style: normal;
+            }
+
+            .bar-date {
+                text-align: right;
+            }
+            .bar-date .dl {
+                font-size: 9px;
+                font-weight: 600;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                color: rgba(150, 200, 255, 0.55);
+                display: block;
+            }
+            .bar-date .dv {
+                font-size: 16px;
+                font-weight: 800;
+                color: #fff;
+                display: block;
+                margin-top: 3px;
+            }
+            .bar-date .du {
+                font-size: 9px;
+                font-weight: 700;
+                letter-spacing: 2px;
+                color: #00c8e6;
+                text-transform: uppercase;
+                display: block;
+                margin-top: 6px;
+            }
+
+            .bar-bottom {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 108px;
+                background: linear-gradient(
+                    135deg,
+                    #071535 0%,
+                    #0d2a5e 55%,
+                    #103378 100%
+                );
+                border-top: 3px solid #00c8e6;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 48px;
+                z-index: 10;
+            }
+
+            .bb-stats {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px 36px;
+            }
+            .bb-item .bl {
+                font-size: 9px;
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                color: rgba(160, 210, 255, 0.7);
+                display: block;
+                margin-bottom: 1px;
+            }
+            .bb-item .bv {
+                font-size: 17px;
+                font-weight: 900;
+                color: #fff;
+                display: block;
+                line-height: 1.1;
+            }
+
+            .bb-seal-wrap {
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+            }
+            .bb-seal {
+                width: 66px;
+                height: 66px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.1);
+                border: 2px solid rgba(0, 200, 230, 0.65);
+                box-shadow: 0 0 0 5px rgba(0, 180, 210, 0.12);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                gap: 1px;
+            }
+            .bb-seal .si {
+                font-size: 22px;
+                color: #00c8e6;
+                line-height: 1;
+            }
+            .bb-seal .st {
+                font-size: 7px;
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                color: rgba(200, 230, 255, 0.65);
+            }
+            .bb-seal-hash {
+                font-family: "Courier New", monospace;
+                font-size: 9px;
+                font-weight: 700;
+                color: rgba(170, 215, 255, 0.75);
+                letter-spacing: 0.3px;
+                max-width: 240px;
+                text-align: center;
+                line-height: 1.4;
+            }
+
+            .bb-qr {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+            }
+            .qr-box {
+                background: #fff;
+                border: 2px solid rgba(0, 160, 220, 0.5);
+                border-radius: 10px;
+                padding: 5px;
+                box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+            }
+            #qrcode canvas,
+            #qrcode img {
+                width: 90px !important;
+                height: 90px !important;
+                border-radius: 5px;
+                display: block;
+            }
+            .qr-lbl {
+                font-size: 8px;
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                color: rgba(160, 210, 255, 0.65);
+                text-align: center;
+            }
+
+            .body {
+                position: absolute;
+                top: 119px;
+                bottom: 111px;
+                left: 148px;
+                right: 148px;
+                z-index: 8;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 18px;
+            }
+
+            .name-section {
+                text-align: center;
+                width: 100%;
+            }
+
+            .ns-intro {
+                font-size: 10px;
+                font-weight: 600;
+                letter-spacing: 4px;
+                text-transform: uppercase;
+                color: #6a9acd;
+                margin-bottom: 8px;
+            }
+            .ns-name {
+                font-family: "Playfair Display", serif;
+                font-size: 44px;
+                font-weight: 800;
+                color: #0a1f4e;
+                line-height: 1;
+                letter-spacing: 1.5px;
+            }
+            .name-underline {
+                width: 340px;
+                height: 2px;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    #00a8c8 30%,
+                    #0060c0 50%,
+                    #00a8c8 70%,
+                    transparent
+                );
+                margin: 10px auto 10px auto;
+                border-radius: 2px;
+            }
+            .ns-desc {
+                font-size: 12px;
+                font-weight: 500;
+                color: #5a7090;
+                margin-bottom: 6px;
+            }
+            /* File name — same scale as person name */
+            .ns-file {
+                font-family: "Playfair Display", serif;
+                font-size: 38px;
+                font-weight: 700;
+                color: #0050a0;
+                line-height: 1.1;
+                letter-spacing: 0.5px;
+            }
+
+            /* ── Stats ── */
+            .stats {
+                display: flex;
+                gap: 0;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+            }
+
+            .sc {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+                padding: 0 34px;
+                position: relative;
+            }
+            .sc + .sc::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 8%;
+                height: 84%;
+                width: 1px;
+                background: linear-gradient(
+                    180deg,
+                    transparent,
+                    rgba(0, 80, 160, 0.18),
+                    transparent
+                );
+            }
+
+            .ring {
+                position: relative;
+                width: 108px;
+                height: 108px;
+            }
+            .ring svg {
+                transform: rotate(-90deg);
+            }
+            .ring .trk {
+                fill: none;
+                stroke-width: 10;
+            }
+            .ring .arc {
+                fill: none;
+                stroke-width: 10;
+                stroke-linecap: round;
+            }
+            .ring-inner {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            .ri-val {
+                font-size: 23px;
+                font-weight: 900;
+                line-height: 1;
+            }
+            .ri-tag {
+                font-size: 8px;
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                opacity: 0.5;
+                margin-top: 1px;
+            }
+            .sc-lbl {
+                font-size: 10.5px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                text-align: center;
+            }
+
+            .g .trk {
+                stroke: #d4f4e2;
+            }
+            .g .arc {
+                stroke: #27ae60;
+            }
+            .g .ri-val,
+            .g .sc-lbl {
+                color: #1a7a40;
+            }
+            .g .ring {
+                filter: drop-shadow(0 4px 12px rgba(39, 174, 96, 0.28));
+            }
+            .r .trk {
+                stroke: #fde3e0;
+            }
+            .r .arc {
+                stroke: #e74c3c;
+            }
+            .r .ri-val,
+            .r .sc-lbl {
+                color: #b83228;
+            }
+            .r .ring {
+                filter: drop-shadow(0 4px 12px rgba(231, 76, 60, 0.25));
+            }
+            .a .trk {
+                stroke: #fdf0d8;
+            }
+            .a .arc {
+                stroke: #e67e22;
+            }
+            .a .ri-val,
+            .a .sc-lbl {
+                color: #9d5010;
+            }
+            .a .ring {
+                filter: drop-shadow(0 4px 12px rgba(230, 126, 34, 0.25));
+            }
+            .b .trk {
+                stroke: #d8ecfc;
+            }
+            .b .arc {
+                stroke: #2980b9;
+            }
+            .b .ri-val,
+            .b .sc-lbl {
+                color: #155a82;
+            }
+            .b .ring {
+                filter: drop-shadow(0 4px 12px rgba(41, 128, 185, 0.25));
+            }
+        </style>
+    </head>
+    <body>
+        <div class="cert">
+            <div class="bg"></div>
+            <div class="bg-white"></div>
+
+            <!-- ── LEFT DECO ── -->
+            <svg
+                class="deco deco-left"
+                width="148"
+                height="800"
+                viewBox="0 0 148 800"
+            >
+                <polygon points="0,0 148,0 118,800 0,800" fill="#0b1f52" />
+                <polygon
+                    points="0,110 148,82  148,100 0,128"
+                    fill="#00c8e6"
+                    opacity="0.35"
+                />
+                <polygon
+                    points="0,150 148,122 148,140 0,168"
+                    fill="#00c8e6"
+                    opacity="0.22"
+                />
+                <polygon
+                    points="0,190 148,162 148,180 0,208"
+                    fill="#00c8e6"
+                    opacity="0.12"
+                />
+                <polygon
+                    points="0,610 148,582 148,600 0,628"
+                    fill="#00c8e6"
+                    opacity="0.12"
+                />
+                <polygon
+                    points="0,650 148,622 148,640 0,668"
+                    fill="#00c8e6"
+                    opacity="0.22"
+                />
+                <polygon
+                    points="0,690 148,662 148,680 0,708"
+                    fill="#00c8e6"
+                    opacity="0.35"
+                />
+                <line
+                    x1="118"
+                    y1="800"
+                    x2="148"
+                    y2="0"
+                    stroke="#00c8e6"
+                    stroke-width="1.5"
+                    opacity="0.45"
+                />
+            </svg>
+
+            <!-- ── RIGHT DECO ── -->
+            <svg
+                class="deco deco-right"
+                width="148"
+                height="800"
+                viewBox="0 0 148 800"
+            >
+                <polygon points="30,0 148,0 148,800 0,800" fill="#0b1f52" />
+                <polygon
+                    points="0,82  148,110 148,128 0,100"
+                    fill="#00c8e6"
+                    opacity="0.35"
+                />
+                <polygon
+                    points="0,122 148,150 148,168 0,140"
+                    fill="#00c8e6"
+                    opacity="0.22"
+                />
+                <polygon
+                    points="0,162 148,190 148,208 0,180"
+                    fill="#00c8e6"
+                    opacity="0.12"
+                />
+                <polygon
+                    points="0,582 148,610 148,628 0,600"
+                    fill="#00c8e6"
+                    opacity="0.12"
+                />
+                <polygon
+                    points="0,622 148,650 148,668 0,640"
+                    fill="#00c8e6"
+                    opacity="0.22"
+                />
+                <polygon
+                    points="0,662 148,690 148,708 0,680"
+                    fill="#00c8e6"
+                    opacity="0.35"
+                />
+                <line
+                    x1="30"
+                    y1="0"
+                    x2="0"
+                    y2="800"
+                    stroke="#00c8e6"
+                    stroke-width="1.5"
+                    opacity="0.45"
+                />
+            </svg>
+
+            <!-- ══ TOP BAR ══ -->
+            <div class="bar-top">
+                <img
+                    class="logo-img"
+                    src="{% static 'resources/logo.png' %}"
+                    alt="Anti-Plagiat.uz"
+                />
+
+                <div class="bar-title">
+                    <div class="cert-no">№ {{ certificate_number }}</div>
+                    <div class="cert-word">SERTI<em>FI</em>KAT</div>
+                </div>
+
+                <div class="bar-date">
+                    <span class="dl">Berilgan sana</span>
+                    <span class="dv">{{created_date}}</span>
+                    <span class="du">anti-plagiat.uz</span>
+                </div>
+            </div>
+
+            <!-- ══ BOTTOM BAR ══ -->
+            <div class="bar-bottom">
+                <!-- Stats left -->
+                <div class="bb-stats">
+                    <div class="bb-item">
+                        <span class="bl">Jami so'zlar</span
+                        ><span class="bv">{{total_words}}</span>
+                    </div>
+                    <div class="bb-item">
+                        <span class="bl">Unikal so'zlar</span
+                        ><span class="bv">{{unique_words}}</span>
+                    </div>
+                    <div class="bb-item">
+                        <span class="bl">Leksik unikallik</span
+                        ><span class="bv">{{lexical_uniqueness}} %</span>
+                    </div>
+                    <div class="bb-item">
+                        <span class="bl">Jumlalar soni</span
+                        ><span class="bv">{{sentence_count}}</span>
+                    </div>
+                </div>
+
+                <!-- Seal + Hash center -->
+                <div class="bb-seal-wrap">
+                    <div class="bb-seal">
+                        <span class="si">✔</span>
+                        <span class="st">Tasdiqlandi</span>
+                    </div>
+                    <div class="bb-seal-hash">{{hash}}</div>
+                </div>
+
+                <!-- QR right — big -->
+                <div class="bb-qr">
+                    <div class="qr-box"><div id="qrcode"></div></div>
+                    <!--<div class="qr-lbl">Skaner — tekshirish</div>-->
+                </div>
+            </div>
+
+            <!-- ══ BODY ══ -->
+            <div class="body">
+                <div class="name-section">
+                    <div class="ns-intro">
+                        Ushbu sertifikat quyidagi shaxsga tegishli
+                    </div>
+                    <div class="ns-name">{{full_name}}</div>
+                    <div class="name-underline"></div>
+                    <div class="ns-desc">
+                        tomonidan taqdim etilgan hujjat plagiat tekshiruvidan
+                        o'tkazildi
+                    </div>
+                    <div class="ns-file">{{file_name}}</div>
+                </div>
+
+                <div class="stats">
+                    <!-- 5%  C=289.03  off=274.58 -->
+                    <div class="sc g">
+                        <div class="ring">
+                            <svg width="108" height="108" viewBox="0 0 108 108">
+                                <defs>
+                                    <linearGradient
+                                        id="gg"
+                                        x1="0%"
+                                        y1="0%"
+                                        x2="100%"
+                                        y2="100%"
+                                    >
+                                        <stop
+                                            offset="0%"
+                                            stop-color="#2ecc71"
+                                        />
+                                        <stop
+                                            offset="100%"
+                                            stop-color="#27ae60"
+                                        />
+                                    </linearGradient>
+                                </defs>
+                                <circle class="trk" cx="54" cy="54" r="46" />
+                                <circle
+                                    class="arc"
+                                    cx="54"
+                                    cy="54"
+                                    r="46"
+                                    fill="none"
+                                    stroke="#27ae60"
+                                    stroke-width="10"
+                                    stroke-linecap="round"
+                                    stroke-dasharray="{{ originality_dash }} {{ circumference }}"
+                                />
+                            </svg>
+                            <div class="ring-inner">
+                                <span class="ri-val">{{originality}}%</span
+                                ><span class="ri-tag">original</span>
+                            </div>
+                        </div>
+                        <div class="sc-lbl">Originallik</div>
+                    </div>
+
+                    <!-- 86%  off=40.46 -->
+                    <div class="sc r">
+                        <div class="ring">
+                            <svg width="108" height="108" viewBox="0 0 108 108">
+                                <defs>
+                                    <linearGradient
+                                        id="gr"
+                                        x1="0%"
+                                        y1="0%"
+                                        x2="100%"
+                                        y2="100%"
+                                    >
+                                        <stop
+                                            offset="0%"
+                                            stop-color="#ff6b6b"
+                                        />
+                                        <stop
+                                            offset="100%"
+                                            stop-color="#e74c3c"
+                                        />
+                                    </linearGradient>
+                                </defs>
+                                <circle class="trk" cx="54" cy="54" r="46" />
+                                <circle
+                                    class="arc"
+                                    cx="54"
+                                    cy="54"
+                                    r="46"
+                                    fill="none"
+                                    stroke="#e74c3c"
+                                    stroke-width="10"
+                                    stroke-linecap="round"
+                                    stroke-dasharray="{{ ai_dash }} {{ circumference }}"
+                                />
+                            </svg>
+                            <div class="ring-inner">
+                                <span class="ri-val">{{ai}}%</span
+                                ><span class="ri-tag">AI</span>
+                            </div>
+                        </div>
+                        <div class="sc-lbl">Sun'iy Intellekt</div>
+                    </div>
+
+                    <!-- 92%  off=23.12 -->
+                    <div class="sc a">
+                        <div class="ring">
+                            <svg width="108" height="108" viewBox="0 0 108 108">
+                                <defs>
+                                    <linearGradient
+                                        id="ga"
+                                        x1="0%"
+                                        y1="0%"
+                                        x2="100%"
+                                        y2="100%"
+                                    >
+                                        <stop
+                                            offset="0%"
+                                            stop-color="#f39c12"
+                                        />
+                                        <stop
+                                            offset="100%"
+                                            stop-color="#e67e22"
+                                        />
+                                    </linearGradient>
+                                </defs>
+                                <circle class="trk" cx="54" cy="54" r="46" />
+                                <circle
+                                    class="arc"
+                                    cx="54"
+                                    cy="54"
+                                    r="46"
+                                    fill="none"
+                                    stroke="#e67e22"
+                                    stroke-width="10"
+                                    stroke-linecap="round"
+                                    stroke-dasharray="{{ plagiat_dash }} {{ circumference }}"
+                                />
+                            </svg>
+                            <div class="ring-inner">
+                                <span class="ri-val">{{plagiat}}%</span
+                                ><span class="ri-tag">plagiat</span>
+                            </div>
+                        </div>
+                        <div class="sc-lbl">Plagiat</div>
+                    </div>
+
+                    <!-- 3%  off=280.36 -->
+                    <div class="sc b">
+                        <div class="ring">
+                            <svg width="108" height="108" viewBox="0 0 108 108">
+                                <defs>
+                                    <linearGradient
+                                        id="gb"
+                                        x1="0%"
+                                        y1="0%"
+                                        x2="100%"
+                                        y2="100%"
+                                    >
+                                        <stop
+                                            offset="0%"
+                                            stop-color="#3498db"
+                                        />
+                                        <stop
+                                            offset="100%"
+                                            stop-color="#2980b9"
+                                        />
+                                    </linearGradient>
+                                </defs>
+                                <circle class="trk" cx="54" cy="54" r="46" />
+                                <circle
+                                    class="arc"
+                                    cx="54"
+                                    cy="54"
+                                    r="46"
+                                    fill="none"
+                                    stroke="#2980b9"
+                                    stroke-width="10"
+                                    stroke-linecap="round"
+                                    stroke-dasharray="{{ quote_dash }} {{ circumference }}"
+                                />
+                            </svg>
+                            <div class="ring-inner">
+                                <span class="ri-val">{{quote}}%</span
+                                ><span class="ri-tag">iqtibos</span>
+                            </div>
+                        </div>
+                        <div class="sc-lbl">Iqtibos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            new QRCode(document.getElementById("qrcode"), {
+                text: "ANTI-PLAGIAT.UZ\n№ 20260401/34007A1D\nShaxs: Sokhibjon Orzikulov\nOriginallik:5% | SI:86% | Plagiat:92% | Iqtibos:3%\nMD5:34007a1d41dd5d21ad8b450fc942a421",
+                width: 90,
+                height: 90,
+                colorDark: "#071535",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M,
+            });
+        </script>
+    </body>
+</html>

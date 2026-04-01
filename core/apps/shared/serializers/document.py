@@ -9,7 +9,7 @@ from core.apps.shared.utils.check_file import check_file
 class DocuemntCreateSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=255)
     file = serializers.FileField()
-    certificate = serializers.FileField()
+    certificate = serializers.BooleanField()
     text = serializers.CharField(required=False)
     total_price = serializers.DecimalField(max_digits=15, decimal_places=2)
 
