@@ -6,12 +6,12 @@ from core.apps.shared.models import Document, DocumentResult, Order
 from core.apps.shared.utils.check_file import check_file
 
 
-class DocuemntCreateSerializer(serializers.ModelSerializer):
+class DocuemntCreateSerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=255)
+    file = serializers.FileField()
+    certificate = serializers.FileField()
+    text = serializers.CharField(required=False)
     total_price = serializers.DecimalField(max_digits=15, decimal_places=2)
-
-    class Meta:
-        model = Document
-        fields = ['title', 'file', 'certificate', 'text', 'total_price']
 
     def create(self, validated_data):
         with transaction.atomic():
