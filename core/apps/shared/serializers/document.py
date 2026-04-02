@@ -15,6 +15,7 @@ class DocuemntCreateSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         with transaction.atomic():
+            total_price = validated_data.pop('total_price')  # 🔥 muhim
             file = validated_data.get('file')
             text = validated_data.get('text')
             document = Document.objects.create(
@@ -25,7 +26,7 @@ class DocuemntCreateSerializer(serializers.Serializer):
                 user=self.context['request'].user
             )
             result, success = check_file(file=file, text=text)
-            Order.objects.create(user=self.context['request'].user, document=document, total_price=validated_data['total_price'])
+            Order.objects.create(user=self.context['request'].user, document=document, total_price=total_price)
             if success:
                 DocumentResult.objects.create(document=document, result_json=result)
                 return document

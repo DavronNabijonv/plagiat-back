@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 # ── Doimiy qiymat ──────────────────────────────────────────────────────────
-CIRCUMFERENCE = round(2 * math.pi * 46, 2)  # r=46 → 289.03
+CIRCUMFERENCE = round(2 * math.pi * 34.5, 2)  # r=34.5 → 216.77
 
 
 def _build_context(originality, ai, plagiat, quote):
@@ -30,10 +30,10 @@ def _build_context(originality, ai, plagiat, quote):
         "plagiat":             plagiat,
         "quote":               quote,
         "circumference":       CIRCUMFERENCE,
-        "originality_dash":    round(CIRCUMFERENCE * 100 / 100, 2),
-        "ai_dash":             round(CIRCUMFERENCE * 100          / 100, 2),
-        "plagiat_dash":        round(CIRCUMFERENCE * 100     / 100, 2),
-        "quote_dash":          round(CIRCUMFERENCE * 100       / 100, 2),
+        "originality_dash":    round(CIRCUMFERENCE * originality / 100, 2),
+        "ai_dash":             round(CIRCUMFERENCE * ai          / 100, 2),
+        "plagiat_dash":        round(CIRCUMFERENCE * plagiat     / 100, 2),
+        "quote_dash":          round(CIRCUMFERENCE * quote       / 100, 2),
     }
 
 
@@ -77,19 +77,19 @@ def certificate_pdf_view(request):
         plagiat=100,
         quote=100,
     )
-
-    # QR SVG ni context ga qo'shamiz (JS ishlamaydi weasyprintda)
     context["qr_svg"] = _make_qr_svg(context)
 
-    html_string = render_to_string("sertifikat_1_3.html", context, request)
-
+    html_string = render_to_string(
+        "sertifikat_1_3.html",
+        context,
+        request,
+    )
     pdf = HTML(
         string=html_string,
         base_url=request.build_absolute_uri(),
     ).write_pdf(
-        stylesheets=[CSS(string="@page { size: 1500px 1000px; margin: 0; }")]
+        stylesheets=[CSS(string="@page { size: A4 landscape; margin: 0; }")]
     )
-
     response = HttpResponse(pdf, content_type="application/pdf")
     response["Content-Disposition"] = 'attachment; filename="sertifikat.pdf"'
     return response
