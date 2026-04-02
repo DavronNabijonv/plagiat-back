@@ -18,6 +18,7 @@ class DocumentCreateView(GenericAPIView):
             return Response(
                 {
                     "id": document.id,
+                    "order_id": document.orders.first().id,
                 }
             )
         except Exception as e:
