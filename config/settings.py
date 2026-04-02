@@ -117,3 +117,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 
 PAYTECH_LICENSE_API_KEY='e472d69e-27b5-4d64-be96-e63a192e0f03'
+
+LOGO_PATH = BASE_DIR / 'resources' / 'logo.png'

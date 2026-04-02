@@ -9,6 +9,7 @@ class Document(BaseModel):
     file = models.FileField(null=True, blank=True, upload_to='documents/')
     text = models.TextField(null=True, blank=True)
     user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='documents')
+    certificate_file = models.FileField(null=True, blank=True, upload_to='certificates/')
     
     def __str__(self):
         return self.title
