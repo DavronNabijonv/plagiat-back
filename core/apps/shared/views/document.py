@@ -15,7 +15,11 @@ class DocumentCreateView(GenericAPIView):
             serializer = self.get_serializer(data=request.data, context={'request': request})
             serializer.is_valid(raise_exception=True)
             document = serializer.save()
-            return Response(serializer.data)
+            return Response(
+                {
+                    "id": document.id,
+                }
+            )
         except Exception as e:
             return Response({'error': str(e)}, status=500)
 
