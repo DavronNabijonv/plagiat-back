@@ -64,7 +64,7 @@ def _build_context_from_result(document: Document, result: DocumentResult) -> di
         "certificate_number": cert_number,
         "created_date":       created_date,
         "full_name":          full_name,
-        "TITLE":              shorten_text(document.title, max_len=40),
+        "TITLE":              document.title,
         "FILE":               Path(document.file.url).name,
         "total_words":        total_words,
         "unique_words":       unique_words,
@@ -111,14 +111,14 @@ def _generate_pdf(request, document: Document, result: DocumentResult) -> bytes:
 
     placeholder_url     = request.build_absolute_uri("/")
     context["qr_svg"]   = _make_qr_svg(placeholder_url)
-    html_tmp            = render_to_string("sertifikat_pdf_5.html", context, request)
+    html_tmp            = render_to_string("sertifikat_pdf_8.html", context, request)
     pdf_tmp             = HTML(string=html_tmp, base_url=request.build_absolute_uri()).write_pdf(stylesheets=[css])
 
     document.certificate_file.save(filename, ContentFile(pdf_tmp), save=True)
 
     cert_url          = request.build_absolute_uri(document.certificate_file.url)
     context["qr_svg"] = _make_qr_svg(cert_url)
-    html_final        = render_to_string("sertifikat_pdf_5.html", context, request)
+    html_final        = render_to_string("sertifikat_pdf_8.html", context, request)
     pdf_final         = HTML(string=html_final, base_url=request.build_absolute_uri()).write_pdf(stylesheets=[css])
 
     document.certificate_file.save(filename, ContentFile(pdf_final), save=True)
@@ -139,7 +139,7 @@ def certificate_view(request, document_id: int):
         )
 
     context["qr_svg"] = _make_qr_svg(qr_url)
-    return render(request, "sertifikat_pdf_5.html", context)
+    return render(request, "sertifikat_pdf_8.html", context)
 
 
 def certificate_pdf_view(request, document_id: int):
