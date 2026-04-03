@@ -62,7 +62,7 @@ def _build_context_from_result(document: Document, result: DocumentResult) -> di
         "certificate_number": cert_number,
         "created_date":       created_date,
         "full_name":          full_name,
-        "file_name":          Path(document.file.name).name,
+        "file_name":          document.title,
         "total_words":        total_words,
         "unique_words":       unique_words,
         "lexical_uniqueness": lexical_unique,
