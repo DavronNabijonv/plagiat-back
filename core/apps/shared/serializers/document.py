@@ -44,6 +44,7 @@ class DocumentResultSerializer(serializers.ModelSerializer):
 class DocumentSerializer(serializers.ModelSerializer):
     results = DocumentResultSerializer(many=True, read_only=True)
     state = serializers.SerializerMethodField(read_only=True)
+    order_id = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Document
@@ -57,6 +58,7 @@ class DocumentSerializer(serializers.ModelSerializer):
             'updated_at',
             'results',
             'state',
+            "order_id",
         ]
 
     def get_state(self, obj):
@@ -67,3 +69,6 @@ class DocumentSerializer(serializers.ModelSerializer):
             if Payment.state == 2:
                 return 'paid'
         return 'unpaid'
+
+    def get_order_id(self, obj):
+        return obj.orders.first().id if obj.orders.first() else None

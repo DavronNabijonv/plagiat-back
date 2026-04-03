@@ -1,0 +1,535 @@
+{% load static %}
+<!doctype html>
+<html lang="uz">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Anti-Plagiat.uz — Sertifikat</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: "Montserrat", Arial, sans-serif;
+                background: #fff;
+                width: 297mm;
+                height: 210mm;
+            }
+
+            /* ── Asosiy wrapper ── */
+            .cert {
+                width: 297mm;
+                height: 210mm;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            /* ══ TOP BAR ══ */
+            .bar-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 12mm;
+                height: 30mm;
+                background: linear-gradient(135deg, #071535 0%, #0d2a5e 55%, #103378 100%);
+                border-bottom: 2px solid #00c8e6;
+            }
+
+            .logo-img {
+                height: 18mm;
+                width: auto;
+                display: block;
+                object-fit: contain;
+                flex-shrink: 0;
+            }
+
+            .bar-title {
+                text-align: center;
+                flex: 1;
+            }
+
+            .bar-date {
+                text-align: right;
+                flex-shrink: 0;
+                width: 200px;
+            }
+
+            .cert-no {
+                font-size: 7pt;
+                font-weight: 600;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                color: rgba(150, 200, 255, 0.6);
+                margin-bottom: 3px;
+            }
+            .cert-word {
+                font-family: "Playfair Display", serif;
+                font-size: 32pt;
+                font-weight: 800;
+                color: #fff;
+                letter-spacing: 10px;
+                text-transform: uppercase;
+                line-height: 1;
+            }
+            .cert-word em {
+                color: #00c8e6;
+                font-style: normal;
+            }
+
+            .bar-date .dl {
+                font-size: 6pt;
+                font-weight: 600;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                color: rgba(150, 200, 255, 0.55);
+                display: block;
+            }
+            .bar-date .dv {
+                font-size: 11pt;
+                font-weight: 800;
+                color: #fff;
+                display: block;
+                margin-top: 2px;
+            }
+            .bar-date .du {
+                font-size: 6pt;
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                color: #00c8e6;
+                text-transform: uppercase;
+                display: block;
+                margin-top: 4px;
+            }
+
+            /* ══ MIDDLE ══ */
+            .middle {
+                flex: 1;
+                display: flex;
+                flex-direction: row;
+                overflow: hidden;
+            }
+
+            .deco-left {
+                flex-shrink: 0;
+                width: 38mm;
+                background: #0b1f52;
+                clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%);
+            }
+
+            .deco-right {
+                flex-shrink: 0;
+                width: 38mm;
+                background: #0b1f52;
+                clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%);
+            }
+
+            .body {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 5mm;
+                padding: 4mm 6mm;
+                background: rgba(255, 255, 255, 0.93);
+            }
+
+            /* ── Name Section ── */
+            .name-section {
+                text-align: center;
+                width: 100%;
+            }
+            .ns-intro {
+                font-size: 6pt;
+                font-weight: 600;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                color: #6a9acd;
+                margin-bottom: 3px;
+            }
+            .ns-name {
+                font-family: "Playfair Display", serif;
+                font-size: 22pt;
+                font-weight: 800;
+                color: #0a1f4e;
+                line-height: 1;
+                letter-spacing: 1px;
+                max-width: 180mm;
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                margin: 0 auto;
+            }
+            .name-underline {
+                width: 70mm;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, #00a8c8 30%, #0060c0 50%, #00a8c8 70%, transparent);
+                margin: 3mm auto;
+                border-radius: 1px;
+            }
+            .ns-desc {
+                font-size: 7pt;
+                font-weight: 500;
+                color: #5a7090;
+                margin-bottom: 2mm;
+            }
+            .ns-file {
+                font-family: "Playfair Display", serif;
+                font-size: 19pt;
+                font-weight: 700;
+                color: #0050a0;
+                line-height: 1.1;
+                max-width: 180mm;
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                margin: 0 auto;
+            }
+
+            /* ── Stats (4 ring) ── */
+            .stats {
+                display: flex;
+                gap: 0;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+            }
+
+            .sc {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 3mm;
+                padding: 0 8mm;
+                border-right: 1px solid rgba(0, 80, 160, 0.12);
+            }
+            .sc:last-child {
+                border-right: none;
+            }
+
+            /* ── Ring wrapper: SVG + HTML label overlay ── */
+            .ring {
+                position: relative;
+                width: 26mm;
+                height: 26mm;
+            }
+            .ring svg {
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
+
+            /* HTML label o'rtada joylashgan — WeasyPrint uchun ishonchli usul */
+            .ring-label {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                pointer-events: none;
+            }
+            .ring-label .pct {
+                font-family: "Montserrat", Arial, sans-serif;
+                font-size: 13pt;
+                font-weight: 900;
+                line-height: 1;
+                display: block;
+                text-align: center;
+            }
+            .ring-label .sub {
+                font-family: "Montserrat", Arial, sans-serif;
+                font-size: 5pt;
+                font-weight: 700;
+                letter-spacing: 0.8px;
+                text-transform: uppercase;
+                opacity: 0.55;
+                margin-top: 1.5px;
+                display: block;
+                text-align: center;
+            }
+
+            /* Ring rang sxemalari */
+            .g .ring-label .pct { color: #1a7a40; }
+            .g .ring-label .sub { color: #1a7a40; }
+            .g .sc-lbl          { color: #1a7a40; }
+
+            .r .ring-label .pct { color: #b83228; }
+            .r .ring-label .sub { color: #b83228; }
+            .r .sc-lbl          { color: #b83228; }
+
+            .a .ring-label .pct { color: #9d5010; }
+            .a .ring-label .sub { color: #9d5010; }
+            .a .sc-lbl          { color: #9d5010; }
+
+            .b .ring-label .pct { color: #155a82; }
+            .b .ring-label .sub { color: #155a82; }
+            .b .sc-lbl          { color: #155a82; }
+
+            .sc-lbl {
+                font-size: 6pt;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1.5px;
+                text-align: center;
+            }
+
+            /* ══ BOTTOM BAR ══ */
+            .bar-bottom {
+                flex-shrink: 0;
+                height: 28mm;
+                background: linear-gradient(135deg, #071535 0%, #0d2a5e 55%, #103378 100%);
+                border-top: 2px solid #00c8e6;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 12mm;
+                gap: 6mm;
+            }
+
+            .bb-stats {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 2mm 9mm;
+            }
+            .bb-item .bl {
+                font-size: 5pt;
+                font-weight: 700;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                color: rgba(160, 210, 255, 0.7);
+                display: block;
+                margin-bottom: 1px;
+            }
+            .bb-item .bv {
+                font-size: 10pt;
+                font-weight: 900;
+                color: #fff;
+                display: block;
+                line-height: 1.1;
+            }
+
+            .bb-seal-wrap {
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 2mm;
+            }
+            .bb-seal {
+                width: 16mm;
+                height: 16mm;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(0, 200, 230, 0.65);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                gap: 1px;
+            }
+            .bb-seal .si {
+                font-size: 14pt;
+                color: #00c8e6;
+                line-height: 1;
+            }
+            .bb-seal .st {
+                font-size: 4pt;
+                font-weight: 700;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                color: rgba(200, 230, 255, 0.65);
+            }
+            .bb-seal-hash {
+                font-family: "Courier New", monospace;
+                font-size: 5pt;
+                font-weight: 700;
+                color: rgba(170, 215, 255, 0.75);
+                letter-spacing: 0.3px;
+                max-width: 50mm;
+                text-align: center;
+                line-height: 1.4;
+            }
+
+            .bb-qr {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 2mm;
+            }
+            .qr-box {
+                background: #fff;
+                border: 1px solid rgba(0, 160, 220, 0.5);
+                border-radius: 3mm;
+                padding: 1.5mm;
+            }
+            .qr-box svg {
+                width: 20mm !important;
+                height: 20mm !important;
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="cert">
+
+            <!-- ══ TOP BAR ══ -->
+            <div class="bar-top">
+                <img
+                    class="logo-img"
+                    src="data:image/png;base64,{{ logo_b64 }}"
+                    alt="Anti-Plagiat.uz"
+                />
+                <div class="bar-title">
+                    <div class="cert-no">№ {{ certificate_number }}</div>
+                    <div class="cert-word">SERTI<em>FI</em>KAT</div>
+                </div>
+                <div class="bar-date">
+                    <span class="dl">Berilgan sana</span>
+                    <span class="dv">{{ created_date }}</span>
+                    <span class="du">anti-plagiat.uz</span>
+                </div>
+            </div>
+
+            <!-- ══ MIDDLE ══ -->
+            <div class="middle">
+                <div class="deco-left"></div>
+
+                <div class="body">
+
+                    <!-- Name -->
+                    <div class="name-section">
+                        <div class="ns-intro">Ushbu sertifikat quyidagi shaxsga tegishli</div>
+                        <div class="ns-name">{{ full_name }}</div>
+                        <div class="name-underline"></div>
+                        <div class="ns-desc">tomonidan taqdim etilgan hujjat plagiat tekshiruvidan o'tkazildi</div>
+                        <div class="ns-file">{{ TITLE }}</div>
+                        <div class="ns-desc" style="margin-top:3mm; color:#8a9ab0; font-size:6.5pt; max-width:180mm; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; margin-left:auto; margin-right:auto;">
+                            <span style="font-weight:600;">Fayl:</span>
+                            <span>{{ FILE }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="stats">
+
+                        <!-- Originallik -->
+                        <div class="sc g">
+                            <div class="ring">
+                                <svg width="100%" height="100%" viewBox="0 0 108 108">
+                                    <circle cx="54" cy="54" r="46" fill="none" stroke="#d4f4e2" stroke-width="10"/>
+                                    <circle cx="54" cy="54" r="46" fill="none" stroke="#27ae60" stroke-width="10"
+                                        stroke-linecap="round"
+                                        stroke-dasharray="{{ originality_dash }} {{ circumference }}"
+                                        transform="rotate(-90 54 54)"/>
+                                    <text x="54" y="54" text-anchor="middle" dominant-baseline="middle"
+                                        style="font-family:Arial,sans-serif;font-size:22px;font-weight:900;fill:#1a7a40;">{{ originality }}%</text>
+                                </svg>
+                            </div>
+                            <div class="sc-lbl">Originallik</div>
+                        </div>
+
+                        <!-- Sun'iy Intellekt -->
+                        <div class="sc r">
+                            <div class="ring">
+                                <svg width="100%" height="100%" viewBox="0 0 108 108">
+                                    <circle cx="54" cy="54" r="46" fill="none" stroke="#fde3e0" stroke-width="10"/>
+                                    <circle cx="54" cy="54" r="46" fill="none" stroke="#e74c3c" stroke-width="10"
+                                        stroke-linecap="round"
+                                        stroke-dasharray="{{ ai_dash }} {{ circumference }}"
+                                        transform="rotate(-90 54 54)"/>
+                                    <text x="54" y="54" text-anchor="middle" dominant-baseline="middle"
+                                        style="font-family:Arial,sans-serif;font-size:22px;font-weight:900;fill:#b83228;">{{ ai }}%</text>
+                                </svg>
+                            </div>
+                            <div class="sc-lbl">Sun'iy Intellekt</div>
+                        </div>
+
+                        <!-- Plagiat -->
+                        <div class="sc a">
+                            <div class="ring">
+                                <svg width="100%" height="100%" viewBox="0 0 108 108">
+                                    <circle cx="54" cy="54" r="46" fill="none" stroke="#fdf0d8" stroke-width="10"/>
+                                    <circle cx="54" cy="54" r="46" fill="none" stroke="#e67e22" stroke-width="10"
+                                        stroke-linecap="round"
+                                        stroke-dasharray="{{ plagiat_dash }} {{ circumference }}"
+                                        transform="rotate(-90 54 54)"/>
+                                    <text x="54" y="54" text-anchor="middle" dominant-baseline="middle"
+                                        style="font-family:Arial,sans-serif;font-size:22px;font-weight:900;fill:#9d5010;">{{ plagiat }}%</text>
+                                </svg>
+                            </div>
+                            <div class="sc-lbl">Plagiat</div>
+                        </div>
+
+                        <!-- Iqtibos -->
+                        <div class="sc b">
+                            <div class="ring">
+                                <svg width="100%" height="100%" viewBox="0 0 108 108">
+                                    <circle cx="54" cy="54" r="46" fill="none" stroke="#d8ecfc" stroke-width="10"/>
+                                    <circle cx="54" cy="54" r="46" fill="none" stroke="#2980b9" stroke-width="10"
+                                        stroke-linecap="round"
+                                        stroke-dasharray="{{ quote_dash }} {{ circumference }}"
+                                        transform="rotate(-90 54 54)"/>
+                                    <text x="54" y="54" text-anchor="middle" dominant-baseline="middle"
+                                        style="font-family:Arial,sans-serif;font-size:22px;font-weight:900;fill:#155a82;">{{ quote }}%</text>
+                                </svg>
+                            </div>
+                            <div class="sc-lbl">Iqtibos</div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="deco-right"></div>
+            </div>
+
+            <!-- ══ BOTTOM BAR ══ -->
+            <div class="bar-bottom">
+                <div class="bb-stats">
+                    <div class="bb-item">
+                        <span class="bl">Jami so'zlar</span>
+                        <span class="bv">{{ total_words }}</span>
+                    </div>
+                    <div class="bb-item">
+                        <span class="bl">Unikal so'zlar</span>
+                        <span class="bv">{{ unique_words }}</span>
+                    </div>
+                    <div class="bb-item">
+                        <span class="bl">Leksik unikallik</span>
+                        <span class="bv">{{ lexical_uniqueness }}%</span>
+                    </div>
+                    <div class="bb-item">
+                        <span class="bl">Jumlalar soni</span>
+                        <span class="bv">{{ sentence_count }}</span>
+                    </div>
+                </div>
+
+                <div class="bb-seal-wrap">
+                    <div class="bb-seal">
+                        <span class="si">✔</span>
+                        <span class="st">Tasdiqlandi</span>
+                    </div>
+                    <div class="bb-seal-hash">{{ hash }}</div>
+                </div>
+
+                <div class="bb-qr">
+                    <div class="qr-box">{{ qr_svg|safe }}</div>
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>
