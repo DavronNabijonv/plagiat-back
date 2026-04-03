@@ -23,6 +23,8 @@ logger = logging.getLogger(__name__)
 # ── Doimiy qiymat ─────────────────────────────────────────────────────────
 CIRCUMFERENCE = round(2 * math.pi * 46, 2)  # r=46 → 289.03
 
+def shorten_text(text, max_len=120):
+    return text if len(text) <= max_len else text[:max_len] + "..."
 
 def _get_logo_base64() -> str:
     from django.conf import settings
@@ -62,7 +64,7 @@ def _build_context_from_result(document: Document, result: DocumentResult) -> di
         "certificate_number": cert_number,
         "created_date":       created_date,
         "full_name":          full_name,
-        "TITLE":          document.title,
+        "TITLE":              shorten_text(document.title, max_len=40),
         "FILE":               Path(document.file.url).name,
         "total_words":        total_words,
         "unique_words":       unique_words,
