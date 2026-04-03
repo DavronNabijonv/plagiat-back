@@ -4,6 +4,7 @@ from rest_framework import permissions
 
 from core.apps.shared.serializers.document import DocuemntCreateSerializer, DocumentSerializer
 from core.apps.shared.models import Document, DocumentResult
+from payme.models import PaymeTransactions
 
 
 class DocumentCreateView(GenericAPIView):
@@ -48,6 +49,14 @@ class DocumentDetailApiView(GenericAPIView):
             document = Document.objects.filter(user=request.user, id=id).first()
             if not document:
                 return Response({'error': 'Document not found'}, status=404)
+            order_id = document.orders.first().id
+            payme_transaction = PaymeTransactions.objects.filter(account_id=order_id).first()
+            if payme_transaction is None:
+                return Response({'error': 'Payment not found'}, status=404)
+            if payme_transaction.state != 2:
+                return Response({'error': 'Payment not completed'}, status=400)
+
+            document.save()
             serializer = self.get_serializer(document)
             return Response(serializer.data)
         except Exception as e:

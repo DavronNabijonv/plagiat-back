@@ -108,7 +108,7 @@ def _generate_pdf(request, document: Document, result: DocumentResult) -> bytes:
 
     placeholder_url     = request.build_absolute_uri("/")
     context["qr_svg"]   = _make_qr_svg(placeholder_url)
-    html_tmp            = render_to_string("sertifikat_pdf.html", context, request)
+    html_tmp            = render_to_string("sertifikat_pdf_3.html", context, request)
     pdf_tmp             = HTML(string=html_tmp, base_url=request.build_absolute_uri()).write_pdf(stylesheets=[css])
 
     document.certificate_file.save(filename, ContentFile(pdf_tmp), save=True)
@@ -136,7 +136,7 @@ def certificate_view(request, document_id: int):
         )
 
     context["qr_svg"] = _make_qr_svg(qr_url)
-    return render(request, "sertifikat_pdf.html", context)
+    return render(request, "sertifikat_pdf_3.html", context)
 
 
 def certificate_pdf_view(request, document_id: int):
