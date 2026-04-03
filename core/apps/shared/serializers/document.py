@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from core.apps.shared.models import Document, DocumentResult, Order
 from core.apps.shared.utils.check_file import check_file
+from payme.models import PaymeTransactions
 
 
 class DocuemntCreateSerializer(serializers.Serializer):
@@ -42,7 +43,27 @@ class DocumentResultSerializer(serializers.ModelSerializer):
 
 class DocumentSerializer(serializers.ModelSerializer):
     results = DocumentResultSerializer(many=True, read_only=True)
+    state = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Document
-        fields = ['id', 'title', 'file', 'certificate', 'text', 'created_at', 'updated_at', 'results']
+        fields = [
+            'id',
+            'title',
+            'file',
+            'certificate',
+            'text',
+            'created_at',
+            'updated_at',
+            'results',
+            'state',
+        ]
+
+    def get_state(self, obj):
+        if not obj.orders.first():
+            return 'unpaid'
+        Payment = PaymeTransactions.objects.filter(account_id=obj.orders.first().id).first()
+        if Payment:
+            if Payment.state == 2:
+                return 'paid'
+        return 'unpaid'

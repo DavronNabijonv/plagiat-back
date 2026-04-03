@@ -12,6 +12,6 @@ class OrderSerializer(serializers.ModelSerializer):
             'id',
             'user',
             'document',
-            'total_price'
+            'total_price',
         )
 
