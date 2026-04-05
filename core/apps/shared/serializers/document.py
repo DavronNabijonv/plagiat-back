@@ -5,6 +5,7 @@ from rest_framework import serializers
 from core.apps.shared.models import Document, DocumentResult, Order
 from core.apps.shared.utils.check_file import check_file
 from payme.models import PaymeTransactions
+from core.apps.shared.tasks.generate_certificate import generate_certificate_pdf
 
 
 class DocuemntCreateSerializer(serializers.Serializer):
@@ -16,23 +17,37 @@ class DocuemntCreateSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         with transaction.atomic():
-            total_price = validated_data.pop('total_price')  # 🔥 muhim
-            file = validated_data.get('file')
-            text = validated_data.get('text')
+            total_price = validated_data.pop('total_price')
+            file        = validated_data.get('file')
+            text        = validated_data.get('text')
+            request     = self.context['request']
+
             document = Document.objects.create(
-                title=validated_data['title'],
-                file=file,
-                certificate=validated_data['certificate'],
-                text=validated_data.get('text'),
-                user=self.context['request'].user
+                title       = validated_data['title'],
+                file        = file,
+                certificate = validated_data['certificate'],
+                text        = text,
+                user        = request.user,
             )
+
             result, success = check_file(file=file, text=text)
-            Order.objects.create(user=self.context['request'].user, document=document, total_price=total_price)
-            if success:
-                DocumentResult.objects.create(document=document, result_json=result)
-                return document
-            else:
+            Order.objects.create(
+                user        = request.user,
+                document    = document,
+                total_price = total_price,
+            )
+
+            if not success:
                 raise serializers.ValidationError("Failed to check file")
+
+            DocumentResult.objects.create(document=document, result_json=result)
+
+            generate_certificate_pdf.delay(
+                document_id = int(document.id),
+                base_url = str(request.build_absolute_uri('/')),
+            )
+
+            return document
 
 
 class DocumentResultSerializer(serializers.ModelSerializer):
