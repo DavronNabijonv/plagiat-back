@@ -47,3 +47,26 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
     restart: always
+
+  redis:
+    networks:
+      - plaget
+    image: redis
+    restart: always
+
+  celery:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.web
+    command: celery -A config worker --loglevel=info
+    volumes:
+      - "./:/code"
+    depends_on:
+      - redis
+      - web
+    networks:
+      - plaget
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    restart: always
