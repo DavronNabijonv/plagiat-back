@@ -16,7 +16,6 @@ class DocuemntCreateSerializer(serializers.Serializer):
     file = serializers.FileField(allow_null=False)
     certificate = serializers.BooleanField(allow_null=False)
     text = serializers.CharField(required=False)
-    total_price = serializers.DecimalField(max_digits=15, decimal_places=2, write_only=True)
     type = serializers.PrimaryKeyRelatedField(queryset=DocumentType.objects.all())
 
     def create(self, validated_data):

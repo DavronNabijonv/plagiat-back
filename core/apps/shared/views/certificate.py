@@ -93,7 +93,7 @@ class PayForCertificateApiView(APIView):
             return_url=f"https://anti-plagiat.uz/uz/{order.document.id}"
         )
 
-        return {
+        return Response({
             "order_id": order.id,
             "payment_link": payment_link
-        }
+        })
