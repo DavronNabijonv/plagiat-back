@@ -77,7 +77,7 @@ def _build_context(document: Document, result) -> dict:
 
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=10)
-def generate_certificate_pdf(self, document_id: int, base_url: str):
+def generate_certificate_pdf(self, document_id, base_url):
     """
     DocumentCreateSerializer.create() dan chaqiriladi.
     certificate=True bo'lsa PDF yaratib certificate_file ga saqlaydi.

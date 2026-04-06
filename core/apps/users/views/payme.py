@@ -6,23 +6,27 @@ from rest_framework.response import Response
 
 from payme.views import PaymeWebHookAPIView
 from payme import Payme
+from payme.models import PaymeTransactions
+
 from core.apps.shared.models import Order
+from core.apps.shared.tasks.generate_certificate import generate_certificate_pdf
 
 payme = Payme(payme_id=settings.PAYME_ID)
 
 class PaymeCallBackAPIView(PaymeWebHookAPIView):
-
-
     def handle_successfully_payment(self, params, result, *args, **kwargs):
-        """
-        Handle the successful payment. You can override this method
-        """
+        transaction_id = params.get("id")
+        transaction = PaymeTransactions.objects.filter(transaction_id=transaction_id).first()
+        order = Order.objects.filter(id=transaction.account_id).first()
+        generate_certificate_pdf.delay(
+            document_id=int(order.document.id),
+            base_url=str(self.request.build_absolute_uri('/')),
+        )
+
         print(f"Transaction successfully performed for this params: {params} and performed_result: {result}")
 
     def handle_cancelled_payment(self, params, result, *args, **kwargs):
-        """
-        Handle the cancelled payment. You can override this method
-        """
+
         print(f"Transaction cancelled for this params: {params} and cancelled_result: {result}")
 
 
