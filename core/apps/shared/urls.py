@@ -3,6 +3,7 @@ from django.urls import path
 from core.apps.shared.views.document import DocumentCreateView, DocumentListApiView, DocumentDetailApiView
 from core.apps.shared.views.order import OrderListApiView
 from core.apps.shared.views.certificate import CertificateDownloadView, CertificateStatusView
+from core.apps.shared.views.document_type import DocumentTypeListAPIView
 
 
 urlpatterns = [
@@ -20,4 +21,5 @@ urlpatterns = [
         name='certificate_download',
     ),
     path('documents/<int:id>/', DocumentDetailApiView.as_view()),
+    path("document_types/", DocumentTypeListAPIView.as_view(), name='document_type-list'),
 ]
