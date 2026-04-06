@@ -5,7 +5,8 @@ from core.apps.shared.views.order import OrderListApiView
 from core.apps.shared.views.certificate import CertificateDownloadView, CertificateStatusView
 from core.apps.shared.views.document_type import DocumentTypeListAPIView
 from core.apps.shared.views.ai_document import AiDocumentDetailApiView, AiDocumentListApiView, AiDocumentCreateView, PayForAiDocumentApiView
-
+from core.apps.shared.views.statistics import StatisticsView
+from core.apps.shared.views.payment_list import UnifiedOrderListView
 
 urlpatterns = [
     path('documents/', DocumentCreateView.as_view(), name='document-create'),
@@ -23,7 +24,7 @@ urlpatterns = [
     ),
     path('documents/<int:id>/', DocumentDetailApiView.as_view()),
     path("document_types/", DocumentTypeListAPIView.as_view(), name='document_type-list'),
-    
+
     path("ai_document/", include(
         [
             path('list/', AiDocumentListApiView.as_view(), name='ai_document-list'),
@@ -31,5 +32,8 @@ urlpatterns = [
             path('pay/<int:document_id>/', PayForAiDocumentApiView.as_view(), name='ai_document-pay'),
             path('<int:id>/', AiDocumentDetailApiView.as_view(), name='ai_document-detail'),
         ]
-    ))
+    )),
+    path('statistics/', StatisticsView.as_view()),
+    path('orders/all/', UnifiedOrderListView.as_view(), name='unified-orders'),
+
 ]
