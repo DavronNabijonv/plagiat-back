@@ -1,7 +1,7 @@
 from django.urls import path, include
 
 from core.apps.shared.views.document import DocumentCreateView, DocumentListApiView, DocumentDetailApiView
-from core.apps.shared.views.order import OrderListApiView
+from core.apps.shared.views.order import OrderListApiView, AiOrderListApiView
 from core.apps.shared.views.certificate import CertificateDownloadView, CertificateStatusView
 from core.apps.shared.views.document_type import DocumentTypeListAPIView
 from core.apps.shared.views.ai_document import AiDocumentDetailApiView, AiDocumentListApiView, AiDocumentCreateView, PayForAiDocumentApiView
@@ -13,6 +13,7 @@ urlpatterns = [
     path('documents/', DocumentCreateView.as_view(), name='document-create'),
     path('documents/list/', DocumentListApiView.as_view(), name='document-list'),
     path('orders/', OrderListApiView.as_view(), name='order-list'),
+    path('ai_orders/', AiOrderListApiView.as_view(), name='order-list'),
     path(
         'certificate/<int:document_id>/status/',
             CertificateStatusView.as_view(),
