@@ -81,7 +81,7 @@ class PayForAiDocumentApiView(APIView):
         payment_link = payme.initializer.generate_pay_link(
             id=document.ai_order.id,
             amount=document.ai_order.total_price,
-            return_url=f"https://anti-plagiat.uz/uz/{document.id}"
+            return_url=f"https://anti-plagiat.uz/uz/si/{document.id}"
         )
 
         return Response({
