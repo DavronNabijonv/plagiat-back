@@ -22,7 +22,7 @@ class LoginView(GenericAPIView):
                 try:
                     user = User.objects.get(tg_id=tg_id)
                 except User.DoesNotExist:
-                    raise ValueError('User not found')
+                    return Response({'message': 'User not found'}, status=404)
 
                 refresh = RefreshToken.for_user(user)
                 access_token = str(refresh.access_token)
