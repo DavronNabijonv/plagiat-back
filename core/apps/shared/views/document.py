@@ -20,6 +20,8 @@ class DocumentCreateView(GenericAPIView):
                 {
                     "id": document.id,
                     "order_id": document.orders.first().id,
+                    "total_price": document.total_price,
+                    "discount": Decimal(41200) - document.total_price,
                 }
             )
         except Exception as e:
