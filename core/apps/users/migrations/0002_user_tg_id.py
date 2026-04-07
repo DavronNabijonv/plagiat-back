@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='tg_id',
-            field=models.CharField(default=1, max_length=200, unique=True),
+            field=models.CharField(max_length=200, null=True, blank=True),
             preserve_default=False,
         ),
     ]
