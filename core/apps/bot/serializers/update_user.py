@@ -7,4 +7,4 @@ class BotUserSerializer(serializers.Serializer):
     tg_id = serializers.CharField(max_length=200)
     first_name = serializers.CharField(max_length=200)
     last_name = serializers.CharField(max_length=200, required=False)
-    phone = serializers.CharField(max_length=200, null=True, blank=True)
+    phone = serializers.CharField(max_length=200)
