@@ -8,6 +8,7 @@ from core.apps.shared.views.ai_document import AiDocumentDetailApiView, AiDocume
 from core.apps.shared.views.statistics import StatisticsView
 from core.apps.shared.views.payment_list import UnifiedOrderListView
 from core.apps.shared.views.download_file import OrderFileDownloadView, AiOrderFileDownloadView
+from core.apps.shared.views.check_file import CheckFileView
 
 urlpatterns = [
     path('documents/', DocumentCreateView.as_view(), name='document-create'),
@@ -39,4 +40,5 @@ urlpatterns = [
     path('orders/all/', UnifiedOrderListView.as_view(), name='unified-orders'),
     path('documents/<int:document_id>/download/', OrderFileDownloadView.as_view(), name='order-file-download'),
     path('ai_documents/<int:ai_document_id>/download/', AiOrderFileDownloadView.as_view(), name='order-file-download'),
+    path('check_file/', CheckFileView.as_view(), name='check-file'),
 ]
