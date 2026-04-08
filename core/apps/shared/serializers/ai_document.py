@@ -71,13 +71,15 @@ class AiDocumentSerializer(serializers.ModelSerializer):
         ]
 
     def get_state(self, obj):
-        if not obj.order:
+        order = obj.orders.filter(type="ai_document").first()
+        if not order:
             return 'unpaid'
-        Payment = PaymeTransactions.objects.filter(account_id=obj.order.id).first()
+        Payment = PaymeTransactions.objects.filter(account_id=order.id).first()
         if Payment:
             if Payment.state == 2:
                 return 'paid'
         return 'unpaid'
 
     def get_order_id(self, obj):
-        return obj.order.id if obj.order else None
+        order = obj.orders.filter(type="ai_document").first()
+        return order.id if order else None
