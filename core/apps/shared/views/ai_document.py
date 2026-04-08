@@ -17,13 +17,13 @@ class AiDocumentCreateView(GenericAPIView):
 
     def post(self, request):
         try:
-            serializer = self.get_serializer(data=request.data, context={'request': request})
+            serializer = AiDocuemntCreateSerializer(data=request.data, context={'request': request})
             serializer.is_valid(raise_exception=True)
-            ai_document = serializer.save()
+            ai_document, order = serializer.save()
             return Response(
                 {
                     "id": ai_document.id,
-                    "order_id": ai_document.order.id,
+                    "order_id": order.id,
                 }
             )
         except Exception as e:
@@ -53,7 +53,7 @@ class AiDocumentDetailApiView(GenericAPIView):
             document = AiDocument.objects.filter(user=request.user, id=id).first()
             if not document:
                 return Response({'error': 'Document not found'}, status=404)
-            order_id = document.order.id
+            order_id = document.orders.filter(type="ai_document").first().id
             payme_transaction = PaymeTransactions.objects.filter(account_id=order_id).first()
             if payme_transaction is None:
                 return Response({'error': 'Payment not found'}, status=404)
@@ -79,12 +79,12 @@ class PayForAiDocumentApiView(APIView):
 
         payme = Payme(payme_id=settings.PAYME_ID)
         payment_link = payme.initializer.generate_pay_link(
-            id=document.order.id,
-            amount=document.order.total_price,
+            id=document.orders.filter(type="ai_document").first().id,
+            amount=document.orders.filter(type="ai_document").first().total_price,
             return_url=f"https://anti-plagiat.uz/uz/si/{document.id}"
         )
 
         return Response({
-            "order_id": document.order.id,
+            "order_id": document.orders.filter(type="ai_document").first().id,
             "payment_link": payment_link
         })

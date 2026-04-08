@@ -30,7 +30,7 @@ class AiDocuemntCreateSerializer(serializers.Serializer):
             ai_document.total_words = txt_count
             ai_document.save()
 
-            Order.objects.create(
+            order = Order.objects.create(
                 user=request.user,
                 ai_document=ai_document,
                 total_price=total_price,
@@ -42,7 +42,7 @@ class AiDocuemntCreateSerializer(serializers.Serializer):
 
             AiDocumentResult.objects.create(document=ai_document, result=result)
 
-            return ai_document
+            return ai_document, order
 
 
 class AiDocumentResultSerializer(serializers.ModelSerializer):
