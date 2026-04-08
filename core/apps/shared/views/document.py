@@ -19,13 +19,14 @@ class DocumentCreateView(GenericAPIView):
         serializer = DocuemntCreateSerializer(data=request.data, context={'request': request})
         if not serializer.is_valid():
             return Response(serializer.errors, status=400)
-        document, order = serializer.save()
+        document, order, discount_price = serializer.save()
         return Response(
             {
                 "id": document.id,
                 "order_id": order.id,
                 "total_price": order.total_price,
-                "discount": Decimal(41200) - order.total_price,
+                "discount": discount_price,
+                "service_fee": order.total_price + Decimal(0.05),
             }
         )
 

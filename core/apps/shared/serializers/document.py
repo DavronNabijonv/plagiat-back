@@ -26,6 +26,8 @@ class DocuemntCreateSerializer(serializers.Serializer):
             request = self.context['request']
             type = validated_data.get('type')
 
+            discount_price = 0
+            
             if not validated_data.get("certificate"):
                 base_price = Decimal('20600.00')
 
@@ -42,9 +44,9 @@ class DocuemntCreateSerializer(serializers.Serializer):
             ).count()
 
             if paid_count >= 10:
-                total_price = base_price * Decimal('0.85')
+                discount_price = base_price * Decimal('0.85')
             else:
-                total_price = base_price
+                discount_price = base_price
 
             document = Document.objects.create(
                 title=validated_data['title'],
@@ -59,7 +61,7 @@ class DocuemntCreateSerializer(serializers.Serializer):
             order = Order.objects.create(
                 user=request.user,
                 document=document,
-                total_price=total_price,
+                total_price=discount_price,
                 type="document"
             )
 
@@ -73,7 +75,7 @@ class DocuemntCreateSerializer(serializers.Serializer):
                     document_id = int(document.id),
                     base_url = str(request.build_absolute_uri('/')),
                 )
-            return document, order
+            return document, order, discount_price
 
 
 class DocumentResultSerializer(serializers.ModelSerializer):
