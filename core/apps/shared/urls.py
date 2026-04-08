@@ -35,7 +35,7 @@ urlpatterns = [
         [
             path('<int:document_id>/status/', CertificateStatusView.as_view(), name='certificate_status'),
             path('<int:document_id>/download/', CertificateDownloadView.as_view(), name='certificate_download'),
-            path('<int:document_id>/pay/', PayForCertificateApiView.as_view(), name='certificate_pay'),
+            # path('<int:document_id>/pay/', PayForCertificateApiView.as_view(), name='certificate_pay'),
         ]
     )),
 
@@ -44,7 +44,7 @@ urlpatterns = [
         [
             path('list/', AiDocumentListApiView.as_view(), name='ai_document-list'),
             path('create/', AiDocumentCreateView.as_view(), name='ai_document-create'),
-            path('<int:id>/pay/', PayForAiDocumentApiView.as_view(), name='ai_document-pay'),
+            # path('<int:id>/pay/', PayForAiDocumentApiView.as_view(), name='ai_document-pay'),
             path('<int:id>/', AiDocumentDetailApiView.as_view(), name='ai_document-detail'),
             path('<int:id>/download/', AiOrderFileDownloadView.as_view(), name='order-file-download'),
         ]
