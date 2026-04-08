@@ -45,6 +45,15 @@ class CertificateDownloadView(GenericAPIView):
             data=request.data,
             context={'request': request, 'document': document},
         )
+        if not document.certificate:
+            return Response(
+                {
+                    "success": False,
+                    "error": "Sertifikat yuklab olish uchun to'lov qiling. 20600.00 so'm",
+                    "code": "not_paid",
+                    "amount": 20600.00
+                }, status=status.HTTP_402_PAYMENT_REQUIRED
+            )
         if not serializer.is_valid():
             return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
