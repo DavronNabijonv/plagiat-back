@@ -47,7 +47,7 @@ class PaymeLinkCreateApiView(GenericAPIView):
             else:
                 url = f"https://anti-plagiat.uz/uz/{order.document.id}"
             payment_link = payme.initializer.generate_pay_link(
-                id=order_id,
+                id=order.id,
                 amount=order.total_price,
                 return_url=url,
             )
