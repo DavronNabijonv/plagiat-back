@@ -27,6 +27,7 @@ class DocumentCreateView(GenericAPIView):
                 "total_price": order.total_price,
                 "discount": order.total_price - discount_price,
                 "service_fee": order.total_price,
+                "certificate": Decimal(20600) if document.certificate else Decimal(0),
             }
         )
 
