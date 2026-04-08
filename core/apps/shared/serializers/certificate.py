@@ -32,10 +32,6 @@ class CertificateDownloadSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 "Hujjat mavjud emas."
             )
-        if not document.certificate:
-            raise serializers.ValidationError(
-                "Sertifikat yuklab olish uchun to'lov qiling. 20600.00 so'm"
-            )
         if not document.certificate_file:
             raise serializers.ValidationError(
                 "Sertifikat tayyor emas, biroz kuting."
