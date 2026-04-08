@@ -26,7 +26,7 @@ class DocumentCreateView(GenericAPIView):
                 "order_id": order.id,
                 "total_price": order.total_price,
                 "discount": order.total_price - discount_price,
-                "service_fee": order.total_price + Decimal(0.05),
+                "service_fee": order.total_price,
             }
         )
 
