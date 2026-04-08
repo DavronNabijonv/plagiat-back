@@ -39,10 +39,17 @@ class PaymeLinkCreateApiView(GenericAPIView):
             order = Order.objects.filter(id=order_id).first()
             if not order:
                 return Response({"error": "Order not found"})
+            url = ""
+            if order.type == "document":
+                url = f"https://anti-plagiat.uz/uz/{order.document.id}"
+            elif order.type == "ai_document":
+                url = f"https://anti-plagiat.uz/uz/si/{order.ai_document.id}"
+            else:
+                url = f"https://anti-plagiat.uz/uz/{order.document.id}"
             payment_link = payme.initializer.generate_pay_link(
                 id=order_id,
                 amount=order.total_price,
-                return_url=f"https://anti-plagiat.uz/uz/{order.document.id}"
+                return_url=url,
             )
             return Response({"payment_link": payment_link})
         except Exception as e:
