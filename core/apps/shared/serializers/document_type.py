@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.apps.shared.models.document_type import DocumentType
+from core.apps.shared.models import DocumentType
 
 
 class DocumentTypeSerializer(serializers.ModelSerializer):

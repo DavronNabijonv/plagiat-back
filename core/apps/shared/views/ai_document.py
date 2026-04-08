@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import permissions
 
 from core.apps.shared.serializers.ai_document import AiDocuemntCreateSerializer, AiDocumentSerializer
-from core.apps.shared.models import AiDocument, AiDocumentResult, AiOrder
+from core.apps.shared.models import AiDocument, AiDocumentResult
 from payme.models import PaymeTransactions
 from payme import Payme
 
@@ -23,7 +23,7 @@ class AiDocumentCreateView(GenericAPIView):
             return Response(
                 {
                     "id": ai_document.id,
-                    "order_id": ai_document.ai_order.id,
+                    "order_id": ai_document.order.id,
                 }
             )
         except Exception as e:
@@ -53,7 +53,7 @@ class AiDocumentDetailApiView(GenericAPIView):
             document = AiDocument.objects.filter(user=request.user, id=id).first()
             if not document:
                 return Response({'error': 'Document not found'}, status=404)
-            order_id = document.ai_order.id
+            order_id = document.order.id
             payme_transaction = PaymeTransactions.objects.filter(account_id=order_id).first()
             if payme_transaction is None:
                 return Response({'error': 'Payment not found'}, status=404)
@@ -71,20 +71,20 @@ class AiDocumentDetailApiView(GenericAPIView):
 class PayForAiDocumentApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, document_id: int):
+    def post(self, request, id: int):
         try:
-            document = AiDocument.objects.get(id=document_id, user=request.user)
+            document = AiDocument.objects.get(id=id, user=request.user)
         except AiDocument.DoesNotExist:
             return Response({"detail": "Hujjat topilmadi"}, status=404)
 
         payme = Payme(payme_id=settings.PAYME_ID)
         payment_link = payme.initializer.generate_pay_link(
-            id=document.ai_order.id,
-            amount=document.ai_order.total_price,
+            id=document.order.id,
+            amount=document.order.total_price,
             return_url=f"https://anti-plagiat.uz/uz/si/{document.id}"
         )
 
         return Response({
-            "order_id": document.ai_order.id,
+            "order_id": document.order.id,
             "payment_link": payment_link
         })

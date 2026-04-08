@@ -26,7 +26,7 @@ class DocuemntCreateSerializer(serializers.Serializer):
             request = self.context['request']
             type = validated_data.get('type')
 
-            if validated_data.get("certificate"):
+            if not validated_data.get("certificate"):
                 base_price = Decimal('20600.00')
 
             now = timezone.now()
@@ -56,7 +56,7 @@ class DocuemntCreateSerializer(serializers.Serializer):
             )
 
             result, success = check_file(file=file, text=text)
-            Order.objects.create(
+            order = Order.objects.create(
                 user=request.user,
                 document=document,
                 total_price=total_price,
@@ -73,7 +73,7 @@ class DocuemntCreateSerializer(serializers.Serializer):
                     document_id = int(document.id),
                     base_url = str(request.build_absolute_uri('/')),
                 )
-            return document
+            return document, order
 
 
 class DocumentResultSerializer(serializers.ModelSerializer):
@@ -112,13 +112,14 @@ class DocumentSerializer(serializers.ModelSerializer):
         } if obj.type else None
 
     def get_state(self, obj):
-        if not obj.orders.first():
+        order = obj.orders.filter(type="document").first()
+        if not order:
             return 'unpaid'
-        Payment = PaymeTransactions.objects.filter(account_id=obj.orders.first().id).first()
+        Payment = PaymeTransactions.objects.filter(account_id=order.id).first()
         if Payment:
             if Payment.state == 2:
                 return 'paid'
         return 'unpaid'
 
     def get_order_id(self, obj):
-        return obj.orders.first().id if obj.orders.first() else None
+        return obj.orders.filter(type="document").first().id if obj.orders.filter(type="document").first() else None

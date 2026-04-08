@@ -3,6 +3,7 @@ import re
 from decimal import Decimal
 from django.http import HttpResponse
 from django.conf import settings
+from django.db import transaction
 
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
@@ -74,6 +75,7 @@ class CertificateDownloadView(GenericAPIView):
 class PayForCertificateApiView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @transaction.atomic
     def post(self, request, document_id: int):
         try:
             document = Document.objects.get(id=document_id, user=request.user)
@@ -83,8 +85,8 @@ class PayForCertificateApiView(APIView):
         order = Order.objects.create(
             user=request.user,
             document=document,
-            total_price=Decimal("20600.00"),
             type="certificate",
+            total_price=Decimal("20600.00"),
         )
         payme = Payme(payme_id=settings.PAYME_ID)
         payment_link = payme.initializer.generate_pay_link(

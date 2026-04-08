@@ -3,7 +3,7 @@ from django.db import transaction
 
 from rest_framework import serializers
 
-from core.apps.shared.models import AiDocument, AiDocumentResult, AiOrder
+from core.apps.shared.models import AiDocument, AiDocumentResult, Order
 from core.apps.shared.utils.check_file import check_file, extract_text
 from payme.models import PaymeTransactions
 
@@ -30,10 +30,11 @@ class AiDocuemntCreateSerializer(serializers.Serializer):
             ai_document.total_words = txt_count
             ai_document.save()
 
-            AiOrder.objects.create(
+            Order.objects.create(
                 user=request.user,
                 ai_document=ai_document,
                 total_price=total_price,
+                type="ai_document",
             )
 
             if not success:
@@ -53,7 +54,7 @@ class AiDocumentResultSerializer(serializers.ModelSerializer):
 class AiDocumentSerializer(serializers.ModelSerializer):
     result = AiDocumentResultSerializer(read_only=True)
     state = serializers.SerializerMethodField(read_only=True)
-    ai_order_id = serializers.SerializerMethodField(read_only=True)
+    order_id = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = AiDocument
@@ -65,18 +66,18 @@ class AiDocumentSerializer(serializers.ModelSerializer):
             'updated_at',
             'result',
             'state',
-            "ai_order_id",
+            "order_id",
             "total_words"
         ]
 
     def get_state(self, obj):
-        if not obj.ai_order:
+        if not obj.order:
             return 'unpaid'
-        Payment = PaymeTransactions.objects.filter(account_id=obj.ai_order.id).first()
+        Payment = PaymeTransactions.objects.filter(account_id=obj.order.id).first()
         if Payment:
             if Payment.state == 2:
                 return 'paid'
         return 'unpaid'
 
-    def get_ai_order_id(self, obj):
-        return obj.ai_order.id if obj.ai_order else None
+    def get_order_id(self, obj):
+        return obj.order.id if obj.order else None

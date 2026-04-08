@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from core.apps.shared.models import Document, DocumentResult
+from core.apps.shared.models import Document, DocumentResult, DocumentType
 
 
 @admin.register(Document)
@@ -13,3 +13,11 @@ class DocumentAdmin(admin.ModelAdmin):
 class DocumentResultAdmin(admin.ModelAdmin):
     list_display = ('id', 'document', 'created_at')
     search_fields = ('document__title',)
+
+
+@admin.register(DocumentType)
+class DocumentTypeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+    search_fields = ('name',)
+    list_display_links = ('id', 'name',)
+    ordering = ('id',)

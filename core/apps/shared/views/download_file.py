@@ -1,19 +1,23 @@
-# views.py
 import os
 from django.http import FileResponse, Http404
+
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+
+from drf_spectacular.utils import extend_schema
+
 from core.apps.shared.models import Document, AiDocument
 from core.apps.shared.serializers.ai_document import AiDocuemntCreateSerializer
 
 
-class OrderFileDownloadView(APIView):
+class DocumentFileDownloadView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, document_id):
+    @extend_schema(tags=['Document'])
+    def get(self, request, id):
         try:
             document = Document.objects.get(
-                id=document_id,
+                id=id,
                 user=request.user
             )
         except Document.DoesNotExist:
@@ -38,10 +42,10 @@ class OrderFileDownloadView(APIView):
 class AiOrderFileDownloadView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, ai_document_id):
+    def get(self, request, id):
         try:
             ai_document = AiDocument.objects.get(
-                id=ai_document_id,
+                id=id,
                 user=request.user
             )
         except AiDocument.DoesNotExist:

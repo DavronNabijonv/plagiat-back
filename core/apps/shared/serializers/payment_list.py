@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.apps.shared.models import Order, AiOrder
+from core.apps.shared.models import Order
 
 
 class UnifiedOrderSerializer(serializers.Serializer):
@@ -12,25 +12,25 @@ class UnifiedOrderSerializer(serializers.Serializer):
     state = serializers.SerializerMethodField()
 
     def get_turi(self, obj):
-        if isinstance(obj, Order):
+        if obj.type == "document":
             return "Plagiat tekshiruvi"
-        return "SI tekshiruvi"
+        elif obj.type == "ai_document":
+            return "SI tekshiruvi"
+        else:
+            return "Sertifikat"
 
     def get_discount(self, obj):
-        if isinstance(obj, Order):
+        if obj.type == "document":
             BASE_PRICE = 41200
             discount = BASE_PRICE - float(obj.total_price)
             return max(discount, 0)
-        return None 
+        return None
 
     def get_state(self, obj):
         from payme.models import PaymeTransactions
 
-        if isinstance(obj, Order):
-            transaction = PaymeTransactions.objects.filter(account_id=obj.id).last()
-        else:
-            transaction = PaymeTransactions.objects.filter(account_id=obj.id).last()
+        transaction = PaymeTransactions.objects.filter(account_id=obj.id).last()
 
         if transaction:
-            return transaction.state
-        return None
+            return "paid" if transaction.state == 2 else "unpaid"
+        return "unpaid"

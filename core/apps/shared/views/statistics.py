@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
 
-from core.apps.shared.models import Document, AiDocument, AiOrder, Order
+from core.apps.shared.models import Document, AiDocument, Order
 from payme.models import PaymeTransactions
 
 
@@ -18,7 +18,6 @@ class StatisticsView(APIView):
         user = request.user
         documents = Document.objects.filter(user=user)
         ai_documents = AiDocument.objects.filter(user=user)
-        ai_orders = AiOrder.objects.filter(user=user)
         orders = Order.objects.filter(user=user)
 
         total_count = documents.count() + ai_documents.count()
@@ -31,15 +30,11 @@ class StatisticsView(APIView):
         ).values_list("account_id_int", flat=True)
 
         paid_orders = orders.filter(id__in=transactions)
-        paid_ai_orders = ai_orders.filter(id__in=transactions)
 
-        paid_price = (
-            (paid_orders.aggregate(Sum('total_price'))['total_price__sum'] or 0) +
-            (paid_ai_orders.aggregate(Sum('total_price'))['total_price__sum'] or 0)
-        )
+        paid_price = paid_orders.aggregate(Sum('total_price'))['total_price__sum'] or 0
+
         return Response({
             'total_documents': total_count,
             'this_month_documents': this_month_count,
-            # 'ai_orders': ,
             'paid_price': paid_price,
         })

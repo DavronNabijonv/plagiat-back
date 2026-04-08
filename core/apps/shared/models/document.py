@@ -30,3 +30,14 @@ class DocumentResult(BaseModel):
     class Meta:
         verbose_name = 'Hujjat natijasi'
         verbose_name_plural = 'Hujjat natijalari'
+
+
+class DocumentType(BaseModel):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return str(self.name)
+
+    class Meta:
+        verbose_name = 'Hujjat turi'
+        verbose_name_plural = 'Hujjat turlari'
