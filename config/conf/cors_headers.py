@@ -19,4 +19,5 @@ CSRF_TRUSTED_ORIGINS = [
     "https://dev-api.anti-plagiat.uz",
     "https://dev.anti-plagiat.uz",
     "https://plagat-ei6yousn1-davronnabijonvs-projects.vercel.app",
+    "https://dev.anti-plagiat.uz"
 ]
