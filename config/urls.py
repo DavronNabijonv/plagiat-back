@@ -31,6 +31,7 @@ urlpatterns = [
         [
             path("users/", include("core.apps.users.urls")),
             path("shared/", include("core.apps.shared.urls")),
+            path("bot/", include("core.apps.bot.urls")),
         ]
     )),
     path("payment/update/", PaymeCallBackAPIView.as_view()),

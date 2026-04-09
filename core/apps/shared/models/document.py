@@ -10,12 +10,34 @@ class Document(BaseModel):
     text = models.TextField(null=True, blank=True)
     user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='documents')
     certificate_file = models.FileField(null=True, blank=True, upload_to='certificates/')
-    
+    type = models.ForeignKey('shared.DocumentType', on_delete=models.SET_NULL, related_name='documents', null=True, blank=True)
+
     def __str__(self):
-        return self.title
-        
+        return str(self.title)
+
+    class Meta:
+        verbose_name = 'Hujjat'
+        verbose_name_plural = 'Hujjatlar'
+
 
 class DocumentResult(BaseModel):
     document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='results')
     result_json = models.JSONField()
-    
+
+    def __str__(self):
+        return str(self.document.title)
+
+    class Meta:
+        verbose_name = 'Hujjat natijasi'
+        verbose_name_plural = 'Hujjat natijalari'
+
+
+class DocumentType(BaseModel):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return str(self.name)
+
+    class Meta:
+        verbose_name = 'Hujjat turi'
+        verbose_name_plural = 'Hujjat turlari'

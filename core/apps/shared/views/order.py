@@ -12,7 +12,7 @@ class OrderListApiView(GenericAPIView):
     def get(self, request):
         try:
             documents = Order.objects.filter(user=request.user)
-            serializer = self.get_serializer(documents, many=True)
+            serializer = OrderSerializer(documents, many=True)
             return Response(serializer.data)
         except Exception as e:
             return Response({'error': str(e)}, status=500)

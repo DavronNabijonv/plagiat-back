@@ -12,6 +12,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'id',
             'user',
             'document',
+            'ai_document',
             'total_price',
+            'type',
         )
-

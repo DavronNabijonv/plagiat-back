@@ -1,15 +1,6 @@
 from pathlib import Path
 from config.env import env
 
-from config.conf.cors_headers import *
-from config.conf.drf_yasg import *
-from config.conf.jazzmin import *
-from config.conf.logs import *
-from config.conf.modern_drf_swagger import *
-from config.conf.rest_framework import *
-from config.conf.simplejwt import *
-from config.conf.payme import *
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 env.read_env(BASE_DIR / ".env")
@@ -119,3 +110,21 @@ AUTH_USER_MODEL = 'users.User'
 PAYTECH_LICENSE_API_KEY='e472d69e-27b5-4d64-be96-e63a192e0f03'
 
 LOGO_PATH = BASE_DIR / 'resources' / 'logo.png'
+
+
+from config.conf.cors_headers import *
+from config.conf.drf_yasg import *
+from config.conf.jazzmin import *
+from config.conf.logs import *
+from config.conf.modern_drf_swagger import *
+from config.conf.rest_framework import *
+from config.conf.simplejwt import *
+from config.conf.payme import *
+
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+
+
+CHAT_ID = env.str("CHAT_ID")
+BOT_TOKEN = env.str("BOT_TOKEN")
