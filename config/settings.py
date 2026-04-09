@@ -120,3 +120,7 @@ from config.conf.modern_drf_swagger import *
 from config.conf.rest_framework import *
 from config.conf.simplejwt import *
 from config.conf.payme import *
+
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
