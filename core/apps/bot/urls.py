@@ -1,9 +1,13 @@
-from django.urls import path
+from django.urls import path, include
 
-from core.apps.bot.views.update_user import BotUserView
-from core.apps.bot.views.check_user import CheckUserView
+from core.apps.bot.views.update_or_create import UpdateUserView
+from core.apps.bot.views.token import TokenView
 
 urlpatterns = [
-    path('get_token/', BotUserView.as_view(), name='get_token'),
-    path('check_user/<str:tg_id>/', CheckUserView.as_view(), name='check_user'),
+    path('user/', include(
+        [
+            path('update_or_create/', UpdateUserView.as_view(), name='update_or_create'),
+            path('token/<str:tg_id>/', TokenView.as_view(), name='token'),
+        ]
+    )),
 ]
