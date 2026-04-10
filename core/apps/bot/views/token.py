@@ -28,8 +28,8 @@ class TokenView(views.APIView):
             access_token = str(token.access_token)
             refresh_token = str(token)
             # lifetime
-            access_lifetime = str(token.access_token.lifetime)
-            refresh_lifetime = str(token.lifetime)
+            access_lifetime = int(token.access_token.lifetime.total_seconds())
+            refresh_lifetime = int(token.lifetime.total_seconds())
 
             return Response(
                 {
