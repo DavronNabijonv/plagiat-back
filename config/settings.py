@@ -68,6 +68,14 @@ DATABASES = {
         'PASSWORD': env('POSTGRES_PASSWORD'),
         'HOST': env('POSTGRES_HOST'),
         'PORT': env('POSTGRES_PORT'),
+    },
+    'backup':{
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('BACKUP_POSTGRES_DB'),
+        'USER': env('POSTGRES_USER'),
+        'PASSWORD': env('POSTGRES_PASSWORD'),
+        'HOST': env('POSTGRES_HOST'),
+        'PORT': env('POSTGRES_PORT'),
     }
 }
 
@@ -128,3 +136,6 @@ X_FRAME_OPTIONS = 'DENY'
 
 CHAT_ID = env.str("CHAT_ID")
 BOT_TOKEN = env.str("BOT_TOKEN")
+
+
+DATABASE_ROUTERS = ['core.services.database_route.BackupReadOnlyRouter']
