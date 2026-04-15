@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="uz">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Hujjat tekshirish natijalari — Boltaboyeva Dildora</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --ink: #0f1117;
+                --paper: #f7f5f0;
+                --accent: #1a5c2e;
+                --accent-light: #e8f5ed;
+                --warn: #b84c00;
+                --warn-light: #fff3eb;
+                --border: #d6d0c4;
+                --muted: #6b6659;
+                --white: #ffffff;
+                --card-shadow: 0 2px 16px rgba(15, 17, 23, 0.07);
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: "IBM Plex Sans", sans-serif;
+                background: var(--paper);
+                color: var(--ink);
+                min-height: 100vh;
+            }
+
+            /* ─── HEADER ─────────────────────────────────── */
+            .site-header {
+                background: var(--ink);
+                padding: 0;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                border-bottom: 3px solid var(--accent);
+            }
+            .header-inner {
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 14px 32px;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            .header-badge {
+                background: var(--accent);
+                color: #fff;
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 11px;
+                font-weight: 500;
+                letter-spacing: 0.12em;
+                padding: 4px 10px;
+                border-radius: 3px;
+                text-transform: uppercase;
+            }
+            .header-title {
+                color: #fff;
+                font-family: "Playfair Display", serif;
+                font-size: 16px;
+                font-weight: 500;
+            }
+            .header-sub {
+                margin-left: auto;
+                color: #9a9486;
+                font-size: 12px;
+                font-family: "IBM Plex Mono", monospace;
+            }
+
+            /* ─── LAYOUT ────────────────────────────────── */
+            .container {
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 40px 32px 60px;
+            }
+
+            /* ─── SECTION LABEL ─────────────────────────── */
+            .section-label {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 10px;
+                letter-spacing: 0.2em;
+                text-transform: uppercase;
+                color: var(--muted);
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .section-label::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: var(--border);
+            }
+
+            /* ─── REPORT META CARD ──────────────────────── */
+            .meta-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                margin-bottom: 32px;
+            }
+            @media (max-width: 700px) {
+                .meta-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            .meta-card {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 24px 28px;
+                box-shadow: var(--card-shadow);
+            }
+            .meta-card h3 {
+                font-family: "Playfair Display", serif;
+                font-size: 13px;
+                font-weight: 700;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--muted);
+                margin-bottom: 16px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid var(--border);
+            }
+            .meta-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                padding: 7px 0;
+                border-bottom: 1px dashed #e8e3da;
+                gap: 12px;
+            }
+            .meta-row:last-child {
+                border-bottom: none;
+            }
+            .meta-key {
+                font-size: 12px;
+                color: var(--muted);
+                font-weight: 400;
+                flex-shrink: 0;
+            }
+            .meta-val {
+                font-size: 12px;
+                font-weight: 500;
+                color: var(--ink);
+                text-align: right;
+                word-break: break-word;
+            }
+
+            /* ─── SCORES ────────────────────────────────── */
+            .scores-strip {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 28px 32px;
+                margin-bottom: 32px;
+                box-shadow: var(--card-shadow);
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 0;
+            }
+            @media (max-width: 700px) {
+                .scores-strip {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+
+            .score-item {
+                text-align: center;
+                padding: 8px 16px;
+                border-right: 1px solid var(--border);
+            }
+            .score-item:last-child {
+                border-right: none;
+            }
+
+            .score-value {
+                font-family: "Playfair Display", serif;
+                font-size: 38px;
+                font-weight: 700;
+                line-height: 1;
+                margin-bottom: 8px;
+            }
+            .score-item.original .score-value {
+                color: var(--accent);
+            }
+            .score-item.plagiat .score-value {
+                color: var(--warn);
+            }
+            .score-item.self .score-value {
+                color: #7a7060;
+            }
+            .score-item.cited .score-value {
+                color: #7a7060;
+            }
+
+            .score-bar-wrap {
+                height: 5px;
+                background: #ede9e0;
+                border-radius: 3px;
+                overflow: hidden;
+                margin-bottom: 8px;
+            }
+            .score-bar {
+                height: 100%;
+                border-radius: 3px;
+                transition: width 1s ease;
+            }
+            .score-item.original .score-bar {
+                background: var(--accent);
+            }
+            .score-item.plagiat .score-bar {
+                background: var(--warn);
+            }
+            .score-item.self .score-bar {
+                background: #aaa394;
+            }
+            .score-item.cited .score-bar {
+                background: #aaa394;
+            }
+
+            .score-label {
+                font-size: 11px;
+                color: var(--muted);
+                font-weight: 400;
+                line-height: 1.4;
+            }
+
+            /* ─── SOURCES TABLE ─────────────────────────── */
+            .sources-card {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: var(--card-shadow);
+                margin-bottom: 40px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 12.5px;
+            }
+            thead tr {
+                background: var(--ink);
+                color: #fff;
+            }
+            thead th {
+                padding: 12px 16px;
+                text-align: left;
+                font-weight: 500;
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 11px;
+                letter-spacing: 0.05em;
+            }
+            tbody tr {
+                border-bottom: 1px solid var(--border);
+                transition: background 0.15s;
+            }
+            tbody tr:last-child {
+                border-bottom: none;
+            }
+            tbody tr:hover {
+                background: #f2ede4;
+            }
+            td {
+                padding: 11px 16px;
+                vertical-align: top;
+                line-height: 1.5;
+            }
+            .td-num {
+                font-family: "IBM Plex Mono", monospace;
+                color: var(--muted);
+                font-size: 11px;
+                white-space: nowrap;
+            }
+            .td-pct {
+                font-family: "IBM Plex Mono", monospace;
+                font-weight: 500;
+                white-space: nowrap;
+            }
+            .pct-high {
+                color: var(--warn);
+            }
+            .pct-zero {
+                color: var(--muted);
+            }
+            .td-source a {
+                color: var(--accent);
+                text-decoration: none;
+                word-break: break-all;
+            }
+            .td-source a:hover {
+                text-decoration: underline;
+            }
+            .source-name {
+                font-weight: 500;
+                color: var(--ink);
+                margin-bottom: 2px;
+            }
+            .td-module {
+                color: var(--muted);
+                font-size: 11.5px;
+                max-width: 200px;
+            }
+
+            /* ─── DIVIDER ────────────────────────────────── */
+            .divider {
+                margin: 48px 0 36px;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            .divider-line {
+                flex: 1;
+                height: 1px;
+                background: var(--border);
+            }
+            .divider-text {
+                font-family: "Playfair Display", serif;
+                font-size: 20px;
+                color: var(--ink);
+                white-space: nowrap;
+            }
+
+            /* ─── PDF VIEWER ─────────────────────────────── */
+            .pdf-wrapper {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: var(--card-shadow);
+            }
+            .pdf-toolbar {
+                background: #1e2028;
+                padding: 12px 20px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                border-bottom: 2px solid var(--accent);
+            }
+            .pdf-toolbar-title {
+                color: #d4cfc4;
+                font-size: 12px;
+                font-family: "IBM Plex Mono", monospace;
+                flex: 1;
+            }
+            .pdf-dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+            }
+            .pdf-dot.r {
+                background: #ff5f57;
+            }
+            .pdf-dot.y {
+                background: #febc2e;
+            }
+            .pdf-dot.g {
+                background: #28c840;
+            }
+
+            .pdf-embed-container {
+                width: 100%;
+                height: 900px;
+                background: #525659;
+            }
+            .pdf-embed-container embed,
+            .pdf-embed-container iframe {
+                width: 100%;
+                height: 100%;
+                border: none;
+                display: block;
+            }
+            .pdf-fallback {
+                display: none;
+                padding: 40px;
+                text-align: center;
+            }
+            .pdf-fallback p {
+                color: var(--muted);
+                margin-bottom: 16px;
+            }
+            .btn-download {
+                display: inline-block;
+                background: var(--accent);
+                color: #fff;
+                padding: 10px 24px;
+                border-radius: 5px;
+                text-decoration: none;
+                font-size: 13px;
+                font-weight: 500;
+            }
+
+            /* ─── DEFINITIONS ────────────────────────────── */
+            .definitions {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 24px 28px;
+                margin-bottom: 32px;
+                box-shadow: var(--card-shadow);
+                font-size: 12.5px;
+                color: var(--muted);
+                line-height: 1.7;
+            }
+            .definitions p {
+                margin-bottom: 8px;
+            }
+            .definitions p:last-child {
+                margin-bottom: 0;
+            }
+            .definitions strong {
+                color: var(--ink);
+                font-weight: 600;
+            }
+
+            /* ─── FOOTER ─────────────────────────────────── */
+            footer {
+                text-align: center;
+                padding: 32px;
+                color: var(--muted);
+                font-size: 11.5px;
+                font-family: "IBM Plex Mono", monospace;
+                border-top: 1px solid var(--border);
+                margin-top: 40px;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- HEADER -->
+        <header class="site-header">
+            <div class="header-inner">
+                <span class="header-badge">Antiplag.Uz</span>
+                <span class="header-title">Hujjat tekshirish natijalari</span>
+                <span class="header-sub">Hisobot №520892 · 10-04-2026</span>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- SECTION 1: META INFO -->
+            <div class="section-label">Hujjat va hisobot ma'lumotlari</div>
+
+            <div class="meta-grid">
+                <!-- Document info -->
+                <div class="meta-card">
+                    <h3>Hujjat to'g'risida</h3>
+                    <div class="meta-row">
+                        <span class="meta-key">Hujjat raqami</span
+                        ><span class="meta-val">520892</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Yuklangan vaqti</span
+                        ><span class="meta-val">10-04-2026, 17:07:00</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Fayl nomi</span
+                        ><span class="meta-val"
+                            >5-maktab Boltaboyeva Dildora1-2.pdf</span
+                        >
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Hujjat turi</span
+                        ><span class="meta-val">Metodik tavsiya</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Matndagi belgilar</span
+                        ><span class="meta-val">20 238</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Gaplar soni</span
+                        ><span class="meta-val">401</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Matn o'lchami</span
+                        ><span class="meta-val">677 338 kB</span>
+                    </div>
+                </div>
+
+                <!-- Checker info -->
+                <div class="meta-card">
+                    <h3>Tekshiruvchi to'g'risida</h3>
+                    <div class="meta-row">
+                        <span class="meta-key">Tekshiruvchi</span
+                        ><span class="meta-val">Bobokulov Dilshod</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">ID</span
+                        ><span class="meta-val">68304</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Tashkilot</span
+                        ><span class="meta-val">—</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Hisobot taqdim etgan</span
+                        ><span class="meta-val">"Antiplag.Uz" servisi</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: SCORES -->
+            <div class="section-label">Tekshiruv ko'rsatkichlari</div>
+
+            <div
+                class="scores-strip"
+                style="grid-template-columns: repeat(4, 1fr)"
+            >
+                <div class="score-item original">
+                    <div class="score-value">83%</div>
+                    <div class="score-bar-wrap">
+                        <div class="score-bar" style="width: 83%"></div>
+                    </div>
+                    <div class="score-label">Originallik</div>
+                </div>
+                <div class="score-item plagiat">
+                    <div class="score-value">13%</div>
+                    <div class="score-bar-wrap">
+                        <div class="score-bar" style="width: 13%"></div>
+                    </div>
+                    <div class="score-label">Plagiat</div>
+                </div>
+                <div class="score-item cited">
+                    <div class="score-value">4%</div>
+                    <div class="score-bar-wrap">
+                        <div
+                            class="score-bar"
+                            style="width: 4%; background: #aaa394"
+                        ></div>
+                    </div>
+                    <div class="score-label">Iqtibos</div>
+                </div>
+                <div class="score-item self" style="border-right: none">
+                    <div class="score-value" style="color: #5b8dd9">96%</div>
+                    <div class="score-bar-wrap">
+                        <div
+                            class="score-bar"
+                            style="width: 96%; background: #5b8dd9"
+                        ></div>
+                    </div>
+                    <div class="score-label">AI ulushi</div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: TEXT ANALYSIS STATS -->
+            <div class="section-label">Matn tahlili statistikasi</div>
+
+            <div class="meta-card" style="margin-bottom: 32px">
+                <h3>Hujjat matn ko'rsatkichlari</h3>
+                <div
+                    style="
+                        display: grid;
+                        grid-template-columns: repeat(
+                            auto-fill,
+                            minmax(200px, 1fr)
+                        );
+                        gap: 0;
+                    "
+                >
+                    <div class="meta-row">
+                        <span class="meta-key">Jami so'zlar</span
+                        ><span class="meta-val">226</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Unikal so'zlar</span
+                        ><span class="meta-val">68</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Leksik unikallik</span
+                        ><span class="meta-val">30.09%</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Jami belgilar</span
+                        ><span class="meta-val">1 472</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Bo'shliqlarsiz</span
+                        ><span class="meta-val">1 171</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Satrlar soni</span
+                        ><span class="meta-val">12</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Raqamlar</span
+                        ><span class="meta-val">268</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Unlilar</span
+                        ><span class="meta-val">255</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Undoshlar</span
+                        ><span class="meta-val">444</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">KATTA harf so'zlar</span
+                        ><span class="meta-val">95</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Tinish belgilari</span
+                        ><span class="meta-val">50</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">O'rtacha so'z uzunligi</span
+                        ><span class="meta-val">4.28</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Lotincha ulushi</span
+                        ><span class="meta-val">96.42%</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Kirillcha ulushi</span
+                        ><span class="meta-val">3.58%</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Polisillabik so'zlar</span
+                        ><span class="meta-val">44 (19.47%)</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Telefon topildi</span
+                        ><span
+                            class="meta-val"
+                            style="color: var(--accent); font-weight: 600"
+                            >✓ Ha</span
+                        >
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Stop-so'zlar</span
+                        ><span class="meta-val">0</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">TOP-5 so'z</span
+                        ><span
+                            class="meta-val"
+                            style="
+                                font-family:
+                                    &quot;IBM Plex Mono&quot;, monospace;
+                                font-size: 10.5px;
+                            "
+                            >new, 2025, 12, 1, project</span
+                        >
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-key">Hash</span
+                        ><span
+                            class="meta-val"
+                            style="
+                                font-family:
+                                    &quot;IBM Plex Mono&quot;, monospace;
+                                font-size: 10px;
+                            "
+                            >ad849bdf3e5001a6…</span
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: HIGHLIGHTED TEXT -->
+            <div class="section-label">
+                Mos kelgan matn parchalar (ajratilgan)
+            </div>
+
+            <div
+                style="
+                    background: var(--white);
+                    border: 1px solid var(--border);
+                    border-radius: 8px;
+                    padding: 24px 28px;
+                    margin-bottom: 40px;
+                    box-shadow: var(--card-shadow);
+                "
+            >
+                <div
+                    style="
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        margin-bottom: 16px;
+                        padding-bottom: 12px;
+                        border-bottom: 1px solid var(--border);
+                    "
+                >
+                    <span
+                        style="
+                            background: #fff3cd;
+                            border: 1px solid #ffc107;
+                            color: #856404;
+                            padding: 3px 10px;
+                            border-radius: 3px;
+                            font-size: 11px;
+                            font-weight: 600;
+                        "
+                        >Sariq — mos kelgan qism</span
+                    >
+                    <span style="font-size: 12px; color: var(--muted)"
+                        >Plagiat ulushi:
+                        <strong style="color: var(--warn)">13%</strong></span
+                    >
+                </div>
+                <div
+                    style="
+                        font-family: &quot;IBM Plex Mono&quot;, monospace;
+                        font-size: 12px;
+                        line-height: 2;
+                        color: var(--ink);
+                        overflow-x: auto;
+                        white-space: pre-wrap;
+                        word-break: break-word;
+                    "
+                >
+                    === Buyurtmalar === Mahsulot nomi | Mahsulot turi |
+                    <mark style="background: #fff3cd; padding: 1px 0"
+                        >Birlik | Miqdor</mark
+                    >
+                    | Holat | Kerakli sana | Omborxona | Omborxona manzili |
+                    Filial | Loyiha | Xodim | Xodim telefon Armatura 10 mm |
+                    PRODUCT | KG | 2 200 | NEW | 2025-12-12 | Prorab Qurilish
+                    Yunusobod | 1 | - | project | Behruz | +998 94
+                    <mark style="background: #fff3cd; padding: 1px 0"
+                        >709-99-71 Armatura 10</mark
+                    >
+                    mm | PRODUCT | KG | 2 200 | NEW | 2025-12-12 | Prorab
+                    Qurilish Yunusobod | 1 | - | project | Behruz | +998 94
+                    709-99-71
+                    <mark style="background: #fff3cd; padding: 1px 0"
+                        >Avtokran xizmati |</mark
+                    >
+                    SERVICE | 100М2 | 22 | NEW | 2025-12-04 | Prorab Qurilish
+                    Yunusobod | 1 | - | project | Behruz | +998 94 709-99-71
+                    Musor chiqarish HOWO | SERVICE | 100М2 | 12 | NEW |
+                    2025-12-04 | Prorab Qurilish Yunusobod | 1 | - | project |
+                    <mark style="background: #fff3cd; padding: 1px 0"
+                        >Behruz | +998</mark
+                    >
+                    94 709-99-71 Telegram post | SERVICE | Dona | 12 | NEW |
+                    2025-12-04
+                    <mark style="background: #fff3cd; padding: 1px 0"
+                        >| Prorab Qurilish</mark
+                    >
+                    Yunusobod | 1 | - | project | Behruz | +998 94 709-99-71
+                    Сугурта | PRODUCT | 100М2 | 45 | NEW | 2025-12-03 | Prorab
+                    Qurilish Yunusobod
+                    <mark style="background: #fff3cd; padding: 1px 0"
+                        >| 1 |</mark
+                    >
+                    - | project | Behruz | +998 94 709-99-71 bayroq | PRODUCT |
+                    x | 1 000 000 | NEW | 2025-11-10 | Prorab Qurilish Yunusobod
+                    | 1 | - | project | Behruz | +998 94 709-99-71 Armatura 10
+                    mm | PRODUCT | x | 1 000 000 | NEW | 2025-11-10 | Prorab
+                    Qurilish Yunusobod | 1 | - | project | Behruz | +998 94
+                    709-99-71 call centre nomer | PRODUCT | Kilovatt | 2 | NEW |
+                    2025-10-30 | MAVRID ФАРМ | 11111
+                    <mark style="background: #fff3cd; padding: 1px 0"
+                        >| - |</mark
+                    >
+                    project | Usmonov Azizbek | +998 99 480-06-48 Сугурта
+                    <mark style="background: #fff3cd; padding: 1px 0"
+                        >| PRODUCT |</mark
+                    >
+                    x | 2 | NEW | 2025-10-30 | MAVRID ФАРМ | 11111 | - | project
+                    | Usmonov Azizbek | +998 99 480-06-48
+                </div>
+            </div>
+
+        <!-- FOOTER -->
+        <footer>
+            Hisobot "Antiplag.Uz" servisi tomonidan taqdim etilgan · Hujjat
+            №520892 · 10-04-2026
+        </footer>
+
+        <script>
+            // Animate score bars on load
+            window.addEventListener("load", () => {
+                document.querySelectorAll(".score-bar").forEach((bar) => {
+                    const w = bar.style.width;
+                    bar.style.width = "0%";
+                    setTimeout(() => {
+                        bar.style.width = w;
+                    }, 200);
+                });
+            });
+
+            // PDF fallback detection
+            const embed = document.getElementById("pdf-embed");
+            if (embed) {
+                embed.addEventListener("error", () => {
+                    embed.style.display = "none";
+                    document.getElementById("pdf-fallback").style.display =
+                        "block";
+                });
+            }
+        </script>
+    </body>
+</html>

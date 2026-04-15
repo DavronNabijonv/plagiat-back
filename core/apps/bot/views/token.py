@@ -1,3 +1,5 @@
+from django.db import transaction
+
 from rest_framework import views, permissions, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -5,7 +7,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from core.apps.users.models import User
 
 
-class CheckUserView(views.APIView):
+class TokenView(views.APIView):
+    @transaction.atomic
     def get(self, request, tg_id):
         try:
             user = User.objects.filter(tg_id=tg_id).first()
@@ -21,22 +24,32 @@ class CheckUserView(views.APIView):
                 )
 
             token = RefreshToken.for_user(user)
+            # token
             access_token = str(token.access_token)
             refresh_token = str(token)
+            # lifetime
+            access_lifetime = int(token.access_token.lifetime.total_seconds())
+            refresh_lifetime = int(token.lifetime.total_seconds())
 
             return Response(
                 {
                     "success": True,
                     "message": "User found",
                     "data": {
-                        "token": {
-                            "access": access_token,
-                            "refresh": refresh_token,
-                        },
                         "user": {
                             "id": user.id,
                             "tg_id": user.tg_id,
-                        }
+                        },
+                        "tokens": {
+                            "access": {
+                                "token": access_token,
+                                "lifetime": access_lifetime,
+                            },
+                            "refresh": {
+                                "token": refresh_token,
+                                "lifetime": refresh_lifetime,
+                            },
+                        },
                     }
                 },
                 status=status.HTTP_200_OK
