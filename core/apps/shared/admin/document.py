@@ -7,7 +7,7 @@ from core.apps.shared.models import Document, DocumentResult, DocumentType
 class DocumentAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'created_at')
     search_fields = ('title',)
-    list_filter = ('user',)
+    list_filter = ('user', 'type')
 
 @admin.register(DocumentResult)
 class DocumentResultAdmin(admin.ModelAdmin):
