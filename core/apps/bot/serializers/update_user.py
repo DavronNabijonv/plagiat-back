@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from core.apps.users.models import User
 
 
