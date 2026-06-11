@@ -24,6 +24,6 @@ CSRF_TRUSTED_ORIGINS = [
     "https://dev-api.anti-plagiat.uz",
     "https://dev.anti-plagiat.uz",
     "https://plagat-ei6yousn1-davronnabijonvs-projects.vercel.app",
-    # Railway test deploy (admin panelga kirish uchun)
-    "https://*.up.railway.app",
+    # Render test deploy (admin panelga kirish uchun)
+    "https://*.onrender.com",
 ]

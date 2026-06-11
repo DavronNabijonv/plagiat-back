@@ -27,7 +27,7 @@ RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt bullseye-pgdg main"
 # (Railway builderi --mount=type=cache ni id'siz qabul qilmaydi, shuning
 # uchun cache mount ishlatilmaydi)
 COPY requirements.txt /code/requirements.txt
-RUN python3 -m pip install --no-cache-dir -r requirements.txt
+RUN python3 -m pip install --no-cache-dir --retries 10 --timeout 60 -r requirements.txt
 
 COPY ./ /code
 

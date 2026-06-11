@@ -1,5 +1,5 @@
 #!/bin/bash
-# Railway entrypoint — Railway $PORT beradi, shu portda eshitamiz.
+# Render entrypoint — Render $PORT beradi (default 10000), shu portda eshitamiz.
 set -e
 
 python3 manage.py collectstatic --noinput

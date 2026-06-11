@@ -1,0 +1,74 @@
+# Render Blueprint — dashboard'da New → Blueprint orqali shu repo ulansa,
+# quyidagi servislar avtomatik yaratiladi.
+# Hujjat: https://render.com/docs/blueprint-spec
+
+databases:
+  - name: plagiat-db
+    plan: free
+    databaseName: plagiat
+    user: plagiat
+
+services:
+  - type: web
+    name: plagiat-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./docker/Dockerfile.web
+    dockerContext: .
+    dockerCommand: sh ./resources/scripts/entrypoint-render.sh
+    healthCheckPath: /api/schema/
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true # Render o'zi tasodifiy qiymat yaratadi
+      - key: DEBUG
+        value: "True" # test deploy: static/media Django orqali xizmat qilinadi
+      - key: ALLOWED_HOSTS
+        value: .onrender.com,localhost
+
+      # PostgreSQL — yuqoridagi plagiat-db dan avtomatik olinadi
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: plagiat-db
+          property: database
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: plagiat-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: plagiat-db
+          property: password
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: plagiat-db
+          property: host
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: plagiat-db
+          property: port
+      # settings backup DB talab qiladi — asosiy DB ko'rsatiladi
+      - key: BACKUP_POSTGRES_DB
+        fromDatabase:
+          name: plagiat-db
+          property: database
+
+      # sync: false — Blueprint yaratilayotganda dashboard qiymat so'raydi
+      - key: CHAT_ID
+        sync: false
+      - key: BOT_TOKEN
+        sync: false
+      - key: PAYME_ID
+        sync: false
+      - key: PAYME_KEY
+        sync: false
+      - key: MULTICARD_APPLICATION_ID
+        sync: false
+      - key: MULTICARD_STORE_ID
+        sync: false
+      - key: MULTICARD_SECRET_KEY
+        sync: false
+      - key: MULTICARD_API_URL
+        value: https://dev-mesh.multicard.uz/api/v1
+      # Domen chiqqach yangilanadi: https://plagiat-backend.onrender.com/payment/multicard/
+      - key: MULTICARD_CALLBACK_URL
+        sync: false
