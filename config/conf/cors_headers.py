@@ -8,6 +8,11 @@ CORS_ALLOWED_ORIGINS = [
     "https://plagat-ei6yousn1-davronnabijonvs-projects.vercel.app",
 ]
 
+# Vercel'ning preview deploylari (har push'da yangi subdomain) uchun
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://plagat-[\w-]+-davronnabijonvs-projects\.vercel\.app$",
+]
+
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
@@ -19,5 +24,6 @@ CSRF_TRUSTED_ORIGINS = [
     "https://dev-api.anti-plagiat.uz",
     "https://dev.anti-plagiat.uz",
     "https://plagat-ei6yousn1-davronnabijonvs-projects.vercel.app",
-    "https://dev.anti-plagiat.uz"
+    # Railway test deploy (admin panelga kirish uchun)
+    "https://*.up.railway.app",
 ]

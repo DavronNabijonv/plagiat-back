@@ -5,7 +5,11 @@ from celery.schedules import crontab
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
-app = Celery("config", broker="redis://redis:6379", backend="redis://redis:6379")
+# Docker compose'da redis servisi, Railway'da esa Redis plugin URL'i ishlatiladi
+BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://redis:6379")
+RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", BROKER_URL)
+
+app = Celery("config", broker=BROKER_URL, backend=RESULT_BACKEND)
 
 
 app.config_from_object("django.conf:settings", namespace="CELERY")

@@ -15,7 +15,15 @@ class UserProfileView(GenericAPIView):
     queryset = User.objects.all()
     
     @extend_schema(
-        description="User profile update qilish uchun api, foydalanuvchi faqat o'zini ma'lumotlarini update qilishi mumkin"
+        tags=['Profile'],
+        summary="Profilni tahrirlash",
+        description=(
+            "Foydalanuvchi o'z profil ma'lumotlarini qisman yangilaydi (PATCH — "
+            "faqat o'zgartirmoqchi bo'lgan maydonlarni yuborish kifoya). "
+            "Foydalanuvchi faqat o'z ma'lumotlarini o'zgartira oladi.\n\n"
+            "**Auth:** `Authorization: Bearer <access>` majburiy.\n\n"
+            "Muvaffaqiyatli javobda yangilangan profil qaytariladi."
+        ),
     )
     def patch(self, request, *args, **kwargs):
         try:
@@ -28,7 +36,13 @@ class UserProfileView(GenericAPIView):
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
     @extend_schema(
-        description="User profile ma'lumotlarini olish uchun api, foydalanuvchi faqat o'zini ma'lumotlarini olishi mumkin"
+        tags=['Profile'],
+        summary="Profil ma'lumotlarini olish",
+        description=(
+            "Joriy (token egasi) foydalanuvchining profil ma'lumotlarini qaytaradi. "
+            "Foydalanuvchi faqat o'z ma'lumotlarini ko'ra oladi.\n\n"
+            "**Auth:** `Authorization: Bearer <access>` majburiy."
+        ),
     )
     def get(self, request, *args, **kwargs):
         try:

@@ -5,6 +5,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
 
+from drf_spectacular.utils import (
+    extend_schema,
+    OpenApiParameter,
+    OpenApiResponse,
+)
+
 from core.apps.shared.serializers.ai_document import AiDocuemntCreateSerializer, AiDocumentSerializer
 from core.apps.shared.models import AiDocument, AiDocumentResult
 from payme.models import PaymeTransactions
@@ -15,6 +21,26 @@ class AiDocumentCreateView(GenericAPIView):
     serializer_class = AiDocuemntCreateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        tags=['AI Document'],
+        summary="Hujjatni AI detektor tekshiruviga yuborish",
+        description=(
+            "Matn AI (sun'iy intellekt) tomonidan yozilganligini aniqlash uchun "
+            "hujjat yaratadi va to'lov orderini ochadi. So'rov "
+            "`multipart/form-data` formatida yuboriladi.\n\n"
+            "**Javob (200):**\n"
+            "```json\n"
+            '{ "id": 7, "order_id": 31 }\n'
+            "```\n"
+            "Keyingi qadam: `order_id` bilan to'lov havolasini oling — "
+            "`POST /users/payment/link/<order_id>/`. Natija to'lovdan so'ng "
+            "`GET /shared/ai_document/<id>/` da ochiladi."
+        ),
+        responses={
+            200: OpenApiResponse(description="AI hujjat va order yaratildi"),
+            500: OpenApiResponse(description="Validatsiya yoki server xatosi"),
+        },
+    )
     def post(self, request):
         try:
             serializer = AiDocuemntCreateSerializer(data=request.data, context={'request': request})
@@ -34,6 +60,14 @@ class AiDocumentListApiView(GenericAPIView):
     serializer_class = AiDocumentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        tags=['AI Document'],
+        summary="Mening AI hujjatlarim ro'yxati",
+        description=(
+            "Joriy foydalanuvchining barcha AI-detektor hujjatlarini qaytaradi. "
+            "Faqat o'z hujjatlari ko'rinadi."
+        ),
+    )
     def get(self, request):
         try:
             ai_documents = AiDocument.objects.filter(user=request.user)
@@ -48,6 +82,31 @@ class AiDocumentDetailApiView(GenericAPIView):
     serializer_class = AiDocumentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        tags=['AI Document'],
+        summary="Bitta AI hujjat tafsilotlari (to'lovdan keyin)",
+        description=(
+            "AI hujjatning to'liq ma'lumotini va AI-detektor natijasini "
+            "qaytaradi. **Natija faqat order to'langandan keyin ochiladi.**\n\n"
+            "**Xato javoblari:**\n"
+            "- `404 {\"error\": \"Document not found\"}` — hujjat topilmadi\n"
+            "- `404 {\"error\": \"Payment not found\"}` — to'lov boshlanmagan\n"
+            "- `400 {\"error\": \"Payment not completed\"}` — to'lov tugallanmagan"
+        ),
+        parameters=[
+            OpenApiParameter(
+                name='id',
+                type=int,
+                location=OpenApiParameter.PATH,
+                description="AI hujjat ID si",
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(description="AI hujjat va detektor natijasi"),
+            400: OpenApiResponse(description="To'lov hali tugallanmagan"),
+            404: OpenApiResponse(description="Hujjat yoki to'lov topilmadi"),
+        },
+    )
     def get(self, request, id):
         try:
             document = AiDocument.objects.filter(user=request.user, id=id).first()
@@ -71,6 +130,16 @@ class AiDocumentDetailApiView(GenericAPIView):
 class PayForAiDocumentApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        tags=['AI Document'],
+        summary="AI hujjat uchun Payme havolasi (hozir ishlatilmaydi)",
+        description=(
+            "AI hujjat orderiga to'g'ridan-to'g'ri Payme to'lov havolasini "
+            "yaratadi. URL'da o'chirilgan — to'lov uchun "
+            "`POST /users/payment/link/<order_id>/` dan foydalaning."
+        ),
+        deprecated=True,
+    )
     def post(self, request, id: int):
         try:
             document = AiDocument.objects.get(id=id, user=request.user)

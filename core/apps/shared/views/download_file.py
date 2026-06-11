@@ -4,7 +4,11 @@ from django.http import FileResponse, Http404
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import (
+    extend_schema,
+    OpenApiParameter,
+    OpenApiResponse,
+)
 
 from core.apps.shared.models import Document, AiDocument
 from core.apps.shared.serializers.ai_document import AiDocuemntCreateSerializer
@@ -13,7 +17,27 @@ from core.apps.shared.serializers.ai_document import AiDocuemntCreateSerializer
 class DocumentFileDownloadView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(tags=['Document'])
+    @extend_schema(
+        tags=['Document'],
+        summary="Hujjatning asl faylini yuklab olish",
+        description=(
+            "Foydalanuvchi tekshiruvga yuborgan asl faylni qaytaradi "
+            "(attachment sifatida). Frontend javobni blob qilib qabul qilishi "
+            "kerak. Faqat o'z hujjatini yuklab olish mumkin."
+        ),
+        parameters=[
+            OpenApiParameter(
+                name='id',
+                type=int,
+                location=OpenApiParameter.PATH,
+                description="Hujjat ID si",
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(description="Fayl (attachment)"),
+            404: OpenApiResponse(description="Hujjat yoki fayl topilmadi"),
+        },
+    )
     def get(self, request, id):
         try:
             document = Document.objects.get(
@@ -42,6 +66,26 @@ class DocumentFileDownloadView(APIView):
 class AiOrderFileDownloadView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        tags=['AI Document'],
+        summary="AI hujjatning asl faylini yuklab olish",
+        description=(
+            "AI tekshiruvga yuborilgan asl faylni qaytaradi (attachment "
+            "sifatida). Faqat o'z hujjatini yuklab olish mumkin."
+        ),
+        parameters=[
+            OpenApiParameter(
+                name='id',
+                type=int,
+                location=OpenApiParameter.PATH,
+                description="AI hujjat ID si",
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(description="Fayl (attachment)"),
+            404: OpenApiResponse(description="AI hujjat yoki fayl topilmadi"),
+        },
+    )
     def get(self, request, id):
         try:
             ai_document = AiDocument.objects.get(

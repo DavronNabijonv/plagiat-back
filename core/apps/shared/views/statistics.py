@@ -7,6 +7,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
 
+from drf_spectacular.utils import extend_schema, OpenApiResponse
+
 from core.apps.shared.models import Document, AiDocument, Order
 from payme.models import PaymeTransactions
 
@@ -14,6 +16,26 @@ from payme.models import PaymeTransactions
 class StatisticsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        tags=['Statistics'],
+        summary="Foydalanuvchi statistikasi",
+        description=(
+            "Joriy foydalanuvchi bo'yicha umumiy ko'rsatkichlarni qaytaradi — "
+            "dashboard sahifasi uchun.\n\n"
+            "**Javob (200):**\n"
+            "```json\n"
+            "{\n"
+            '  "total_documents": 12,\n'
+            '  "this_month_documents": 3,\n'
+            '  "paid_price": 145000\n'
+            "}\n"
+            "```\n"
+            "- `total_documents` — jami hujjatlar (plagiat + AI)\n"
+            "- `this_month_documents` — shu oyda yaratilganlari\n"
+            "- `paid_price` — to'langan orderlar umumiy summasi (so'm)"
+        ),
+        responses={200: OpenApiResponse(description="Statistika ko'rsatkichlari")},
+    )
     def get(self, request):
         user = request.user
         documents = Document.objects.filter(user=user)

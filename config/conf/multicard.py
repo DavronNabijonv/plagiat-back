@@ -1,0 +1,9 @@
+from config.env import env
+
+MULTICARD_APPLICATION_ID = env.str("MULTICARD_APPLICATION_ID")
+MULTICARD_STORE_ID = env.str("MULTICARD_STORE_ID")
+MULTICARD_SECRET_KEY = env.str("MULTICARD_SECRET_KEY")
+MULTICARD_API_URL = env.str(
+    "MULTICARD_API_URL", default="https://dev-mesh.multicard.uz/api/v1"
+)
+MULTICARD_CALLBACK_URL = env.str("MULTICARD_CALLBACK_URL")

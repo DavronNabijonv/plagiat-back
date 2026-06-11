@@ -22,12 +22,50 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'modern_drf_swagger',
     'drf_yasg',
+    'drf_spectacular',
     'corsheaders',
     'payme',
     # local apps
     'core.apps.users',
     'core.apps.shared',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Plagiat API',
+    'DESCRIPTION': (
+        "anti-plagiat.uz backend API hujjati.\n\n"
+        "**Autentifikatsiya:** `Auth` bo'limidagi register/login orqali `access` "
+        "token oling va himoyalangan endpointlarga `Authorization: Bearer <access>` "
+        "header'ida yuboring.\n\n"
+        "**Asosiy oqim:**\n"
+        "1. `POST /shared/check_file/` — narxni oldindan ko'rsatish (auth shart emas)\n"
+        "2. `POST /shared/documents/` yoki `POST /shared/ai_document/create/` — "
+        "hujjat yaratish, javobda `order_id` keladi\n"
+        "3. `POST /users/payment/link/<order_id>/` — to'lov havolasini olish "
+        "(multicard yoki balance)\n"
+        "4. To'lovdan so'ng detail endpointlardan natijani olish\n\n"
+        "`Webhook` bo'limidagi endpointlar to'lov provayderlari uchun — "
+        "frontend ularni chaqirmaydi."
+    ),
+    'VERSION': '1.0.0',
+    'TAGS': [
+        {'name': 'Auth', 'description': "Ro'yxatdan o'tish va login"},
+        {'name': 'Profile', 'description': "Foydalanuvchi profili"},
+        {'name': 'Check File', 'description': "Fayl narxini oldindan hisoblash"},
+        {'name': 'Document', 'description': "Plagiat tekshiruv hujjatlari"},
+        {'name': 'AI Document', 'description': "AI detektor hujjatlari"},
+        {'name': 'Certificate', 'description': "Sertifikat holati va yuklab olish"},
+        {'name': 'Order', 'description': "Orderlar va to'lovlar tarixi"},
+        {'name': 'Payment', 'description': "To'lov havolalari, balans, balansni to'ldirish"},
+        {'name': 'Statistics', 'description': "Foydalanuvchi statistikasi"},
+        {'name': 'Bot', 'description': "Telegram bot integratsiyasi"},
+        {'name': 'Webhook', 'description': "To'lov provayderlari uchun (frontend chaqirmaydi)"},
+    ],
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -128,6 +166,7 @@ from config.conf.modern_drf_swagger import *
 from config.conf.rest_framework import *
 from config.conf.simplejwt import *
 from config.conf.payme import *
+from config.conf.multicard import *
 
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True

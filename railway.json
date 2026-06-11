@@ -1,0 +1,14 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "docker/Dockerfile.web"
+  },
+  "deploy": {
+    "startCommand": "sh ./resources/scripts/entrypoint-railway.sh",
+    "healthcheckPath": "/api/schema/",
+    "healthcheckTimeout": 120,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 3
+  }
+}

@@ -11,6 +11,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
+from drf_spectacular.utils import (
+    extend_schema,
+    OpenApiParameter,
+    OpenApiResponse,
+)
+
 from core.apps.shared.models import Document, Order
 from core.apps.shared.serializers.certificate import CertificateDownloadSerializer
 from core.apps.shared.utils.generate_certificate import _regenerate_pdf_with_overrides
@@ -20,6 +26,37 @@ from payme import Payme
 class CertificateStatusView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        tags=['Certificate'],
+        summary="Sertifikat tayyorlik holatini tekshirish",
+        description=(
+            "Hujjat sertifikati (PDF) tayyor yoki hali generatsiya qilinayotganini "
+            "qaytaradi. Sertifikat fonda (Celery) yaratiladi, shuning uchun "
+            "tayyor bo'lguncha bu endpointni polling qilib turing.\n\n"
+            "**Javob (200):**\n"
+            "```json\n"
+            '{ "status": "ready" }\n'
+            "```\n"
+            "yoki\n"
+            "```json\n"
+            '{ "status": "processing" }\n'
+            "```\n"
+            "`ready` bo'lgach `POST /shared/certificate/<document_id>/download/` "
+            "orqali yuklab olish mumkin."
+        ),
+        parameters=[
+            OpenApiParameter(
+                name='document_id',
+                type=int,
+                location=OpenApiParameter.PATH,
+                description="Hujjat ID si",
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(description='"ready" yoki "processing" holati'),
+            404: OpenApiResponse(description="Hujjat topilmadi"),
+        },
+    )
     def get(self, request, document_id: int):
         try:
             document = Document.objects.get(id=document_id, user=request.user)
@@ -35,6 +72,46 @@ class CertificateDownloadView(GenericAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CertificateDownloadSerializer
 
+    @extend_schema(
+        tags=['Certificate'],
+        summary="Sertifikatni yuklab olish (PDF)",
+        description=(
+            "Sertifikat PDF faylini qaytaradi (`application/pdf`, attachment). "
+            "Frontend javobni blob sifatida qabul qilib, faylni saqlashi kerak.\n\n"
+            "**So'rov tanasi:**\n"
+            "```json\n"
+            "{\n"
+            '  "full_name": "Ali Valiyev",\n'
+            '  "file_name": "Dissertatsiya",\n'
+            '  "document_type": 1\n'
+            "}\n"
+            "```\n"
+            "- `full_name` — sertifikatda ko'rsatiladigan F.I.Sh (kamida 2 so'z)\n"
+            "- `file_name` — sertifikatdagi ish nomi (`/ \\\\ : * ? \" < > |` "
+            "belgilarisiz)\n"
+            "- `document_type` — hujjat turi ID si\n\n"
+            "**Xato holatlari:**\n"
+            "- `402` — sertifikat uchun to'lov qilinmagan (20 600 so'm), javobda "
+            "`code: \"not_paid\"` keladi\n"
+            "- `400` — validatsiya xatosi yoki sertifikat hali tayyor emas "
+            "(avval status endpointidan `ready` ni kuting)"
+        ),
+        parameters=[
+            OpenApiParameter(
+                name='document_id',
+                type=int,
+                location=OpenApiParameter.PATH,
+                description="Hujjat ID si",
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(description="PDF fayl (application/pdf, attachment)"),
+            400: OpenApiResponse(description="Validatsiya xatosi yoki sertifikat tayyor emas"),
+            402: OpenApiResponse(description="Sertifikat uchun to'lov qilinmagan"),
+            404: OpenApiResponse(description="Hujjat topilmadi"),
+            500: OpenApiResponse(description="PDF tayyorlashda server xatosi"),
+        },
+    )
     def post(self, request, document_id: int):
         try:
             document = Document.objects.get(id=document_id, user=request.user)
@@ -84,6 +161,16 @@ class CertificateDownloadView(GenericAPIView):
 class PayForCertificateApiView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        tags=['Certificate'],
+        summary="Sertifikat uchun Payme havolasi (hozir ishlatilmaydi)",
+        description=(
+            "Sertifikat to'lovi uchun alohida order ochib, Payme havolasini "
+            "qaytaradi. URL'da o'chirilgan — to'lov uchun "
+            "`POST /users/payment/link/<order_id>/` dan foydalaning."
+        ),
+        deprecated=True,
+    )
     @transaction.atomic
     def post(self, request, document_id: int):
         try:

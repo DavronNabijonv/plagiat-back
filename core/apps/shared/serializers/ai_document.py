@@ -3,9 +3,11 @@ from django.db import transaction
 
 from rest_framework import serializers
 
+from drf_spectacular.utils import extend_schema_field
+
 from core.apps.shared.models import AiDocument, AiDocumentResult, Order
 from core.apps.shared.utils.check_file import check_file, extract_text
-from payme.models import PaymeTransactions
+from core.apps.shared.serializers.payment_list import resolve_order_state
 
 
 class AiDocuemntCreateSerializer(serializers.Serializer):
@@ -70,16 +72,19 @@ class AiDocumentSerializer(serializers.ModelSerializer):
             "total_words"
         ]
 
+    @extend_schema_field(
+        serializers.ChoiceField(
+            choices=['tolandi', 'kutilyabdi', 'tolanmagan'],
+            help_text="Order to'lov holati",
+        )
+    )
     def get_state(self, obj):
         order = obj.orders.filter(type="ai_document").first()
         if not order:
-            return 'unpaid'
-        Payment = PaymeTransactions.objects.filter(account_id=order.id).first()
-        if Payment:
-            if Payment.state == 2:
-                return 'paid'
-        return 'unpaid'
+            return 'tolanmagan'
+        return resolve_order_state(order)
 
+    @extend_schema_field(serializers.IntegerField(allow_null=True))
     def get_order_id(self, obj):
         order = obj.orders.filter(type="ai_document").first()
         return order.id if order else None

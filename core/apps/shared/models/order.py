@@ -11,6 +11,16 @@ class Order(BaseModel):
 
     type = models.CharField(max_length=100, choices=[('certificate', 'Certificate'), ('document', 'Document'), ('ai_document', 'AI Document')], default='document')
 
+    payment_provider = models.CharField(
+        max_length=20,
+        choices=[
+            ('multicard', 'Multicard'),
+            ('balance', 'Balans'),
+            ('payme', 'Payme'),
+        ],
+        null=True, blank=True,
+    )
+
     def __str__(self):
         return f"{self.id} - {self.type} - {self.total_price}"
 
