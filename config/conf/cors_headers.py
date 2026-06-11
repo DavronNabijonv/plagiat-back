@@ -2,6 +2,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:8000",
+    # Test backend serveri
+    "http://82.25.190.233:8001",
     "https://plagat.vercel.app",
     "https://anti-plagiat.uz",
     "https://dev.anti-plagiat.uz",
@@ -17,6 +19,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:8000",
+    # Test backend serveri (admin panelga kirish uchun)
+    "http://82.25.190.233:8001",
     "https://plaget.felixits.uz",
     "https://plagat.vercel.app",
     "https://api.anti-plagiat.uz",
