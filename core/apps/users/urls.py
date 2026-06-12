@@ -15,6 +15,11 @@ from core.apps.users.views.balance import (
     PayWithBalanceView,
     BalanceView,
 )
+from core.apps.users.views.card_transfer import (
+    CardRequisitesView,
+    CardReceiptUploadView,
+)
+from core.apps.users.views.promo import PromoApplyView
 
 
 urlpatterns = [
@@ -47,6 +52,25 @@ urlpatterns = [
         'balance/pay/<int:order_id>/',
         PayWithBalanceView.as_view(),
         name='balance-pay',
+    ),
+
+    # BE-22/24: karta o'tkazmasi (qo'lda tasdiqlash)
+    path(
+        'card/requisites/',
+        CardRequisitesView.as_view(),
+        name='card-requisites',
+    ),
+    path(
+        'card/receipt/<int:order_id>/',
+        CardReceiptUploadView.as_view(),
+        name='card-receipt',
+    ),
+
+    # BE-09: promo-kod
+    path(
+        'promo/apply/<int:order_id>/',
+        PromoApplyView.as_view(),
+        name='promo-apply',
     ),
 
     # Orqaga moslik

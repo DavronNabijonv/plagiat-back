@@ -7,12 +7,14 @@ from drf_spectacular.utils import extend_schema_field
 
 from core.apps.shared.models import AiDocument, AiDocumentResult, Order
 from core.apps.shared.utils.check_file import check_file, extract_text
+from core.apps.shared.utils.file_validation import validate_upload
 from core.apps.shared.serializers.payment_list import resolve_order_state
 
 
 class AiDocuemntCreateSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=255, allow_null=False)
-    file = serializers.FileField(allow_null=False)
+    # BE-08: yagona fayl limiti (50MB) va format validatsiyasi
+    file = serializers.FileField(allow_null=False, validators=[validate_upload])
 
     def create(self, validated_data):
         with transaction.atomic():

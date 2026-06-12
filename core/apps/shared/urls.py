@@ -2,7 +2,7 @@ from django.urls import path, include
 
 from core.apps.shared.views.document import DocumentCreateView, DocumentListApiView, DocumentDetailApiView
 from core.apps.shared.views.order import OrderListApiView
-from core.apps.shared.views.certificate import CertificateDownloadView, CertificateStatusView, PayForCertificateApiView
+from core.apps.shared.views.certificate import CertificateDownloadView, CertificateStatusView, PayForCertificateApiView, CertificateVerifyView
 from core.apps.shared.views.document_type import DocumentTypeListAPIView
 from core.apps.shared.views.ai_document import AiDocumentDetailApiView, AiDocumentListApiView, AiDocumentCreateView, PayForAiDocumentApiView
 from core.apps.shared.views.statistics import StatisticsView
@@ -35,6 +35,8 @@ urlpatterns = [
         [
             path('<int:document_id>/status/', CertificateStatusView.as_view(), name='certificate_status'),
             path('<int:document_id>/download/', CertificateDownloadView.as_view(), name='certificate_download'),
+            # BE-05: QR uchun ommaviy tasdiqlash (login talab qilinmaydi)
+            path('verify/<int:document_id>/', CertificateVerifyView.as_view(), name='certificate_verify'),
             # path('<int:document_id>/pay/', PayForCertificateApiView.as_view(), name='certificate_pay'),
         ]
     )),

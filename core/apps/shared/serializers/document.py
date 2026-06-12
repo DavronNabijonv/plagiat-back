@@ -9,30 +9,41 @@ from drf_spectacular.utils import extend_schema_field, inline_serializer
 
 from core.apps.shared.models import Document, DocumentResult, Order, DocumentType
 from core.apps.shared.utils.check_file import check_file
+from core.apps.shared.utils.file_validation import validate_upload
 from payme.models import PaymeTransactions
 from core.apps.shared.serializers.payment_list import resolve_order_state
 from core.apps.shared.tasks.generate_certificate import generate_certificate_pdf
 
 
+# Narx komponentlari (frontend shared/lib/metadata.ts bilan mos)
+SERVICE_FEE = Decimal('20600.00')
+CERTIFICATE_PRICE = Decimal('20600.00')
+AI_CHECK_PRICE = Decimal('10300.00')
+
+
 class DocuemntCreateSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=255, allow_null=False)
-    file = serializers.FileField(allow_null=False)
+    # BE-08: yagona fayl limiti (50MB) va format validatsiyasi
+    file = serializers.FileField(allow_null=False, validators=[validate_upload])
     certificate = serializers.BooleanField(allow_null=False)
+    # BE-07: AI-tekshiruvni qo'shimcha opsiya sifatida buyurtma qilish
+    ai_check = serializers.BooleanField(required=False, default=False)
     text = serializers.CharField(required=False)
     type = serializers.PrimaryKeyRelatedField(queryset=DocumentType.objects.all())
 
     def create(self, validated_data):
         with transaction.atomic():
-            base_price = Decimal('41200.00')
             file = validated_data.get('file')
             text = validated_data.get('text')
             request = self.context['request']
             type = validated_data.get('type')
+            ai_check = validated_data.get('ai_check', False)
 
-            discount_price = 0
-
-            if not validated_data.get("certificate"):
-                base_price = Decimal('20600.00')
+            base_price = SERVICE_FEE
+            if validated_data.get("certificate"):
+                base_price += CERTIFICATE_PRICE
+            if ai_check:
+                base_price += AI_CHECK_PRICE
 
             now = timezone.now()
             orders_this_month = Order.objects.filter(
@@ -55,6 +66,7 @@ class DocuemntCreateSerializer(serializers.Serializer):
                 title=validated_data['title'],
                 file=file,
                 certificate=validated_data['certificate'],
+                ai_check=ai_check,
                 text=text,
                 user=request.user,
                 type=type,
@@ -92,6 +104,7 @@ class DocumentSerializer(serializers.ModelSerializer):
     state = serializers.SerializerMethodField(read_only=True)
     order_id = serializers.SerializerMethodField(read_only=True)
     type = serializers.SerializerMethodField(read_only=True)
+    price_calculation = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Document
@@ -100,6 +113,7 @@ class DocumentSerializer(serializers.ModelSerializer):
             'title',
             'file',
             'certificate',
+            'ai_check',
             'text',
             'created_at',
             'updated_at',
@@ -108,6 +122,7 @@ class DocumentSerializer(serializers.ModelSerializer):
             "order_id",
             "certificate_file",
             "type",
+            "price_calculation",
         ]
 
     @extend_schema_field(
@@ -140,3 +155,30 @@ class DocumentSerializer(serializers.ModelSerializer):
     @extend_schema_field(serializers.IntegerField(allow_null=True))
     def get_order_id(self, obj):
         return obj.orders.filter(type="document").first().id if obj.orders.filter(type="document").first() else None
+
+    @extend_schema_field(
+        inline_serializer(
+            name='PriceCalculationField',
+            fields={
+                'service_fee': serializers.FloatField(),
+                'discount': serializers.FloatField(),
+                'certificate': serializers.FloatField(),
+                'total_price': serializers.FloatField(),
+            },
+        )
+    )
+    def get_price_calculation(self, obj):
+        """Frontend to'lov oynasi uchun narx taqsimoti (BE-01/FE-01)."""
+        order = obj.orders.filter(type="document").first()
+        if not order:
+            return None
+        certificate = CERTIFICATE_PRICE if obj.certificate else Decimal('0.00')
+        ai_check = AI_CHECK_PRICE if obj.ai_check else Decimal('0.00')
+        base = SERVICE_FEE + certificate + ai_check
+        discount = max(base - order.total_price, Decimal('0.00'))
+        return {
+            'service_fee': float(SERVICE_FEE),
+            'discount': float(discount),
+            'certificate': float(certificate),
+            'total_price': float(order.total_price),
+        }

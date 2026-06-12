@@ -17,6 +17,8 @@ class Order(BaseModel):
             ('multicard', 'Multicard'),
             ('balance', 'Balans'),
             ('payme', 'Payme'),
+            # BE-22: karta o'tkazmasi (qo'lda tasdiqlash)
+            ('card_transfer', "Karta o'tkazmasi"),
         ],
         null=True, blank=True,
     )

@@ -6,6 +6,8 @@ from core.apps.shared.models import BaseModel
 class Document(BaseModel):
     title = models.CharField(max_length=200)
     certificate = models.BooleanField(default=False)
+    # BE-07: plagiat bilan birga AI-tekshiruv ham buyurtma qilingan
+    ai_check = models.BooleanField(default=False)
     file = models.FileField(null=True, blank=True, upload_to='documents/')
     text = models.TextField(null=True, blank=True)
     user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='documents')

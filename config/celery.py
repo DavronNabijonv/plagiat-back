@@ -21,4 +21,9 @@ app.conf.beat_schedule = {
         "schedule": crontab(hour=0, minute=0),
         # "schedule": crontab(minute="*/1"),
     },
+    # BE-04: to'lanmagan orderlar uchun 1 soat / 24 soat eslatmalari
+    "unpaid-payment-reminders": {
+        "task": "core.apps.shared.tasks.payment_reminder.send_payment_reminders",
+        "schedule": crontab(minute="*/15"),
+    },
 }

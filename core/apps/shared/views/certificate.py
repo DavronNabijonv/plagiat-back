@@ -195,3 +195,90 @@ class PayForCertificateApiView(APIView):
             "order_id": order.id,
             "payment_link": payment_link
         })
+
+
+class CertificateVerifyView(APIView):
+    """
+    BE-05: sertifikatdagi QR ochadigan ommaviy tasdiqlash endpointi.
+    Login talab qilmaydi — frontend /verify/{id} sahifasi shu yerdan o'qiydi.
+    """
+    permission_classes = []
+    authentication_classes = []
+
+    @extend_schema(
+        tags=['Certificate'],
+        summary="Sertifikatni ommaviy tasdiqlash (login talab qilinmaydi)",
+        description=(
+            "Sertifikatdagi QR-kod ochadigan sahifa uchun ma'lumot. Hujjat "
+            "mavjud, to'langan va natijasi bor bo'lsa `valid: true` bilan "
+            "asosiy ballarni qaytaradi.\n\n"
+            "**Javob (200):**\n"
+            "```json\n"
+            "{\n"
+            '  "valid": true,\n'
+            '  "document_id": 10,\n'
+            '  "certificate_number": "00000010 / A1B2C3D4",\n'
+            '  "title": "Dissertatsiya mavzusi",\n'
+            '  "owner_name": "Ali Valiyev",\n'
+            '  "hash": "a1b2c3d4...",\n'
+            '  "created_at": "2026-06-12T10:00:00Z",\n'
+            '  "originality": 86, "plagiarism": 9, "citation": 5, "ai": 12\n'
+            "}\n"
+            "```\n"
+            "Hujjat topilmasa yoki to'lanmagan bo'lsa `{\"valid\": false}` (404)."
+        ),
+        parameters=[
+            OpenApiParameter(
+                name='document_id',
+                type=int,
+                location=OpenApiParameter.PATH,
+                description="Sertifikatdagi hujjat ID si",
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(description="Sertifikat haqiqiy — ballar bilan"),
+            404: OpenApiResponse(description="Sertifikat topilmadi yoki haqiqiy emas"),
+        },
+    )
+    def get(self, request, document_id: int):
+        from core.apps.shared.serializers.payment_list import resolve_order_state
+
+        document = (
+            Document.objects
+            .select_related('user')
+            .filter(id=document_id)
+            .first()
+        )
+        if document is None:
+            return Response({"valid": False}, status=status.HTTP_404_NOT_FOUND)
+
+        result = document.results.order_by('-id').first()
+        order = document.orders.filter(type="document").first()
+
+        if result is None or order is None or resolve_order_state(order) != 'paid':
+            return Response({"valid": False}, status=status.HTTP_404_NOT_FOUND)
+
+        res = result.result_json.get("res", {})
+        hash_val = res.get("hash", "")
+        cert_number = (
+            f"{document.id:08d} / {hash_val[:8].upper()}"
+            if hash_val else f"{document.id:08d}"
+        )
+        owner_name = (
+            f"{document.user.first_name} {document.user.last_name}".strip()
+            or str(document.user.phone)
+        )
+
+        return Response({
+            "valid": True,
+            "document_id": document.id,
+            "certificate_number": cert_number,
+            "title": document.title,
+            "owner_name": owner_name,
+            "hash": hash_val,
+            "created_at": document.created_at,
+            "originality": res.get("originality"),
+            "plagiarism": res.get("plagiarism"),
+            "citation": res.get("citation"),
+            "ai": res.get("ai"),
+        })

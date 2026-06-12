@@ -25,6 +25,14 @@ def resolve_order_state(order) -> str:
             return 'paid'
         return 'unpaid'
 
+    if provider == 'card_transfer':
+        # BE-24/25: chek admin tomonidan tasdiqlangandagina 'paid'
+        from core.apps.shared.models.card_transfer import CardTransferPayment
+        tx = CardTransferPayment.objects.filter(order=order).order_by('-id').first()
+        if tx and tx.state == CardTransferPayment.APPROVED:
+            return 'paid'
+        return 'unpaid'
+
     # payme yoki None (eski orderlar)
     tx = PaymeTransactions.objects.filter(account_id=order.id).last()
     if tx and tx.state == 2:

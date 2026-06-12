@@ -11,8 +11,8 @@ from drf_spectacular.utils import (
 )
 
 from core.apps.shared.serializers.document import DocuemntCreateSerializer, DocumentSerializer
+from core.apps.shared.serializers.payment_list import resolve_order_state
 from core.apps.shared.models import Document
-from payme.models import PaymeTransactions
 
 class DocumentCreateView(GenericAPIView):
     serializer_class = DocuemntCreateSerializer
@@ -65,6 +65,8 @@ class DocumentCreateView(GenericAPIView):
                 "discount": order.total_price - discount_price,
                 "service_fee": order.total_price,
                 "certificate": Decimal(20600) if document.certificate else Decimal(0),
+                # BE-07: AI-tekshiruv komponenti
+                "ai_check": Decimal(10300) if document.ai_check else Decimal(0),
             }
         )
 
@@ -93,17 +95,16 @@ class DocumentDetailApiView(GenericAPIView):
 
     @extend_schema(
         tags=['Document'],
-        summary="Bitta hujjat tafsilotlari (to'lovdan keyin)",
+        summary="Bitta hujjat tafsilotlari (pay-to-unlock)",
         description=(
-            "Hujjatning to'liq ma'lumotini, jumladan plagiat tekshiruv "
-            "natijasini qaytaradi. **Natija faqat order to'langandan keyin "
-            "ochiladi** — aks holda 400/404 xato qaytadi.\n\n"
-            "**Xato javoblari:**\n"
-            "- `404 {\"error\": \"Document not found\"}` — hujjat topilmadi\n"
-            "- `404 {\"error\": \"Payment not found\"}` — to'lov boshlanmagan\n"
-            "- `400 {\"error\": \"Payment not completed\"}` — to'lov tugallanmagan\n\n"
-            "To'lov tugallanmagan bo'lsa foydalanuvchini to'lov havolasiga "
-            "qaytaring (`POST /users/payment/link/<order_id>/`)."
+            "Hujjat ma'lumotini qaytaradi. **To'liq natija (results) faqat "
+            "order to'langandan keyin ochiladi** — server tomonda himoya "
+            "(BE-01).\n\n"
+            "To'lanmagan hujjat uchun `state: \"unpaid\"`, `order_id` va "
+            "`price_calculation` qaytadi, lekin `results` bo'sh bo'ladi — "
+            "frontend teaser/lock ko'rinishini shu javobdan quradi.\n\n"
+            "To'lov holati barcha providerlar (Payme, Multicard, balans, "
+            "karta o'tkazmasi) bo'yicha tekshiriladi."
         ),
         parameters=[
             OpenApiParameter(
@@ -114,26 +115,20 @@ class DocumentDetailApiView(GenericAPIView):
             ),
         ],
         responses={
-            200: OpenApiResponse(description="Hujjat va plagiat natijasi"),
-            400: OpenApiResponse(description="To'lov hali tugallanmagan"),
-            404: OpenApiResponse(description="Hujjat yoki to'lov topilmadi"),
+            200: OpenApiResponse(description="Hujjat (to'langan bo'lsa natija bilan)"),
+            404: OpenApiResponse(description="Hujjat topilmadi"),
         },
     )
     def get(self, request, id):
-        try:
-            document = Document.objects.filter(user=request.user, id=id).first()
-            if not document:
-                return Response({'error': 'Document not found'}, status=404)
-            order = document.orders.filter(type="document").first()
-            order_id = order.id
-            payme_transaction = PaymeTransactions.objects.filter(account_id=order_id).first()
-            if payme_transaction is None:
-                return Response({'error': 'Payment not found'}, status=404)
-            if payme_transaction.state != 2:
-                return Response({'error': 'Payment not completed'}, status=400)
+        document = Document.objects.filter(user=request.user, id=id).first()
+        if not document:
+            return Response({'error': 'Document not found'}, status=404)
 
-            document.save()
-            serializer = DocumentSerializer(document)
-            return Response(serializer.data)
-        except Exception as e:
-            return Response({'error': str(e)}, status=500)
+        order = document.orders.filter(type="document").first()
+        state = resolve_order_state(order) if order else 'unpaid'
+
+        data = DocumentSerializer(document).data
+        if state != 'paid':
+            # Pay-to-unlock: natija server tomonda yashiriladi (BE-01)
+            data['results'] = []
+        return Response(data)

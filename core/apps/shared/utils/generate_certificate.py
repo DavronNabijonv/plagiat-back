@@ -54,10 +54,9 @@ def _regenerate_pdf_with_overrides(
     created_at   = getattr(document, 'created_at', None)
     created_date = localtime(created_at).strftime("%d.%m.%Y") if created_at else "—"
 
-    if document.certificate_file:
-        qr_url = request.build_absolute_uri(document.certificate_file.url)
-    else:
-        qr_url = request.build_absolute_uri('/')
+    # BE-05/E1: QR ommaviy tasdiqlash sahifasiga olib boradi
+    from django.conf import settings
+    qr_url = f"{settings.FRONTEND_URL.rstrip('/')}/verify/{document.id}"
 
     context = {
         "certificate_number": cert_number,

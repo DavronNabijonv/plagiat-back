@@ -94,15 +94,12 @@ def generate_certificate_pdf(self, document_id, base_url):
         safe_title = re.sub(r'[^\w\-]', '_', document.title)[:40]
         filename   = f"sertifikat_{safe_title}.pdf"
 
-        context["qr_svg"] = _make_qr_svg(base_url)
-        pdf_tmp = HTML(
-            string=render_to_string("sertifikat_pdf_9.html", context),
-            base_url=base_url,
-        ).write_pdf(stylesheets=[css], presentational_hints=True)
-        document.certificate_file.save(filename, ContentFile(pdf_tmp), save=True)
-
-        cert_url          = base_url.rstrip('/') + document.certificate_file.url
-        context["qr_svg"] = _make_qr_svg(cert_url)
+        # BE-05/E1: QR ommaviy tasdiqlash sahifasiga olib boradi
+        # ({FRONTEND_URL}/verify/{id} — login talab qilinmaydi), shu sababli
+        # PDF'ni ikki bosqichda qayta yaratish ham kerak emas.
+        from django.conf import settings
+        verify_url = f"{settings.FRONTEND_URL.rstrip('/')}/verify/{document.id}"
+        context["qr_svg"] = _make_qr_svg(verify_url)
         pdf_final = HTML(
             string=render_to_string("sertifikat_pdf_9.html", context),
             base_url=base_url,

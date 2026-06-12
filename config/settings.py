@@ -157,6 +157,9 @@ PAYTECH_LICENSE_API_KEY='e472d69e-27b5-4d64-be96-e63a192e0f03'
 
 LOGO_PATH = BASE_DIR / 'resources' / 'logo.png'
 
+# Sertifikat QR'i shu sahifaga olib boradi: {FRONTEND_URL}/verify/{document_id}
+FRONTEND_URL = env.str("FRONTEND_URL", default="https://anti-plagiat.uz")
+
 
 from config.conf.cors_headers import *
 from config.conf.drf_yasg import *
