@@ -1,11 +1,10 @@
-import hashlib
-import hmac
-from decimal import Decimal
+import logging
+from decimal import Decimal, InvalidOperation
 
-from django.conf import settings
 from django.db import transaction
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
-import requests
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
     extend_schema,
@@ -19,63 +18,12 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
-from core.apps.shared.models.multicard_transaction import MulticardTransaction
-from core.apps.shared.models.balance_topup import BalanceTopup
 from core.apps.shared.models import Order
+from core.apps.shared.models.balance_topup import BalanceTopup
+from core.apps.shared.models.multicard_transaction import MulticardTransaction
+from core.services.raxmat import RaxmatError, RaxmatService
 
-
-def _get_token() -> str:
-    """
-    POST /auth → JWT token oladi.
-    Har so'rovda yangi token olinadi (token 24 soat amal qiladi).
-    """
-    resp = requests.post(
-        f"{settings.MULTICARD_API_URL}/auth",
-        json={
-            "application_id": settings.MULTICARD_APPLICATION_ID,
-            "secret": settings.MULTICARD_SECRET_KEY,
-        },
-        timeout=10,
-    )
-    resp.raise_for_status()
-    return resp.json()["token"]
-
-
-def _build_multicard_url(
-    order_id, amount_tiyin, return_url, description
-) -> tuple[str, str]:
-    """
-    POST /payment/invoice → checkout_url va invoice uuid qaytaradi.
-    """
-    token = _get_token()
-    payload = {
-        "store_id": settings.MULTICARD_STORE_ID,
-        "amount": amount_tiyin,
-        "invoice_id": str(order_id),
-        "callback_url": settings.MULTICARD_CALLBACK_URL,
-        "return_url": return_url,
-        "lang": "uz",
-    }
-    resp = requests.post(
-        f"{settings.MULTICARD_API_URL}/payment/invoice",
-        json=payload,
-        headers={"Authorization": f"Bearer {token}"},
-        timeout=10,
-    )
-    resp.raise_for_status()
-    data = resp.json().get("data", {})
-    checkout_url = data.get("checkout_url") or data.get("url")
-    uuid = data.get("uuid") or str(order_id)
-    return uuid, checkout_url
-
-
-def _verify_signature(
-    uuid: str, invoice_id: str, amount, sign: str
-) -> bool:
-    """SHA1({uuid}{invoice_id}{amount}{secret}) — Multicard webhook imzosi."""
-    raw = f"{uuid}{invoice_id}{amount}{settings.MULTICARD_SECRET_KEY}"
-    expected = hashlib.sha1(raw.encode()).hexdigest()
-    return hmac.compare_digest(expected, sign)
+logger = logging.getLogger(__name__)
 
 
 class MulticardCreateView(APIView):
@@ -129,9 +77,7 @@ class MulticardCreateView(APIView):
         },
     )
     def post(self, request, order_id):
-        order = Order.objects.filter(
-            id=order_id, user=request.user
-        ).first()
+        order = Order.objects.filter(id=order_id, user=request.user).first()
         if not order:
             return Response(
                 {"error": "Order topilmadi"},
@@ -145,13 +91,12 @@ class MulticardCreateView(APIView):
 
         from core.apps.users.views.payme import _return_url
         try:
-            uuid, checkout_url = _build_multicard_url(
-                order_id=order.id,
-                amount_tiyin=int(order.total_price * 100),
+            uuid, checkout_url = RaxmatService().create_invoice(
+                amount=order.total_price,
+                invoice_id=order.id,
                 return_url=_return_url(order),
-                description=f"Anti-plagiat #{order.id}",
             )
-        except Exception as e:
+        except RaxmatError as e:
             return Response(
                 {"error": f"Multicard xatoligi: {e}"},
                 status=status.HTTP_502_BAD_GATEWAY,
@@ -230,27 +175,25 @@ class MulticardTopupCreateView(APIView):
         },
     )
     def post(self, request):
-        amount = request.data.get('amount')
-        if not amount or Decimal(str(amount)) < Decimal('1000'):
+        try:
+            amount = Decimal(str(request.data.get('amount')))
+        except (InvalidOperation, TypeError):
+            amount = Decimal('0')
+        if amount < Decimal('1000'):
             return Response(
                 {"error": "Minimal to'ldirish miqdori 1000 so'm"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        amount = Decimal(str(amount))
 
-        topup = BalanceTopup.objects.create(
-            user=request.user,
-            amount=amount,
-        )
+        topup = BalanceTopup.objects.create(user=request.user, amount=amount)
 
         try:
-            uuid, checkout_url = _build_multicard_url(
-                order_id=f"topup_{topup.id}",
-                amount_tiyin=int(amount * 100),
+            uuid, checkout_url = RaxmatService().create_invoice(
+                amount=amount,
+                invoice_id=f"topup_{topup.id}",
                 return_url="https://anti-plagiat.uz/uz/balance",
-                description=f"Balans to'ldirish #{topup.id}",
             )
-        except Exception as e:
+        except RaxmatError as e:
             topup.delete()
             return Response(
                 {"error": f"Multicard xatoligi: {e}"},
@@ -271,20 +214,25 @@ class MulticardTopupCreateView(APIView):
         })
 
 
-class MulticardWebhookView(APIView):
-    """
-    POST /payment/multicard/
-    Multicard to'lov natijasini shu endpointga yuboradi (IP: 195.158.26.90).
+class _MulticardCallbackBase(APIView):
+    """Multicard'dan kelgan to'lov natijasini qayta ishlovchi bazaviy view.
 
-    sign = SHA1(uuid + invoice_id + amount + secret)
-    status 'success' → to'landi; 'error'|'revert' → bekor.
-    Javob: {"success": true} HTTP 200 (aks holda 5 marta qayta urinadi).
+    Imzo tekshiriladi, summa solishtiriladi, so'ng tranzaksiya holati
+    yangilanadi. Multicard'ga {"success": true} + HTTP 200 qaytarilmasa,
+    u callback'ni 5 martagacha qayta yuboradi — shu sababli "bizga
+    tegishli emas" holatlarda ham 200 qaytariladi.
     """
+
+    # Tashqi tizim chaqiradi — autentifikatsiya yo'q, himoya imzo orqali
     permission_classes = []
+    authentication_classes = []
+
+    # Log'larda success va webhook callback'larini farqlash uchun
+    callback_kind = "callback"
 
     @extend_schema(
         tags=['Webhook'],
-        summary="Multicard webhook (frontend uchun emas)",
+        summary="Multicard callback (frontend uchun emas)",
         description=(
             "Multicard to'lov natijasini shu endpointga o'zi yuboradi. "
             "**Frontend bu endpointni chaqirmaydi.**"
@@ -294,49 +242,108 @@ class MulticardWebhookView(APIView):
     )
     def post(self, request):
         data = request.data
-        uuid = data.get('uuid', '')
-        invoice_id = data.get('invoice_id', '')
-        amount = data.get('amount', 0)
-        sign = data.get('sign', '')
-        evt_status = data.get('status', '')
+        service = RaxmatService()
 
-        if not _verify_signature(uuid, invoice_id, amount, sign):
+        if not service.verify_callback_sign(data):
+            logger.warning(
+                "Multicard %s callback: imzo mos kelmadi (invoice_id=%s)",
+                self.callback_kind, data.get("invoice_id"),
+            )
             return Response(
                 {"success": False, "message": "Invalid signature"},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
         tx = MulticardTransaction.objects.filter(
-            transaction_id=uuid
+            transaction_id=data.get("uuid", "")
         ).first()
-        if not tx:
+        if tx is None:
+            # Bizda bunday tranzaksiya yo'q — baribir 200, aks holda
+            # Multicard yo'q invoice uchun qayta urinaveradi
+            logger.warning(
+                "Multicard %s callback: tranzaksiya topilmadi (uuid=%s, invoice_id=%s)",
+                self.callback_kind, data.get("uuid"), data.get("invoice_id"),
+            )
             return Response({"success": True})
 
-        if evt_status == 'success':
-            self._handle_success(tx)
-        elif evt_status in ('error', 'revert'):
-            with transaction.atomic():
-                tx.state = MulticardTransaction.CANCELLED
-                tx.save(update_fields=['state', 'updated_at'])
+        # Multicard summani tiyinda yuboradi, bazada so'mda saqlanadi
+        try:
+            received_amount = Decimal(str(data.get("amount", 0)))
+        except InvalidOperation:
+            received_amount = Decimal("-1")
+        if received_amount != tx.amount * 100:
+            logger.warning(
+                "Multicard %s callback: summa mos kelmadi "
+                "(invoice_id=%s, kelgan=%s, kutilgan=%s)",
+                self.callback_kind, data.get("invoice_id"),
+                received_amount, tx.amount * 100,
+            )
+            return Response({"success": False}, status=status.HTTP_400_BAD_REQUEST)
+
+        evt_status = data.get("status", "")
+        if evt_status == "success":
+            self._apply_success(tx, data)
+        elif evt_status in ("error", "revert"):
+            self._apply_cancel(tx)
+        # Boshqa statuslar (masalan, oraliq holatlar) — shunchaki qabul qilinadi
 
         return Response({"success": True})
 
+    @extend_schema(exclude=True)
+    def get(self, request):
+        # Foydalanuvchi to'lovdan keyin brauzer orqali kelib qolsa
+        return Response({"success": True}, status=status.HTTP_200_OK)
+
     @transaction.atomic
-    def _handle_success(self, tx):
+    def _apply_success(self, tx: MulticardTransaction, data: dict) -> None:
+        # Qator bloklanadi: webhook va success callback bir vaqtda kelsa ham
+        # to'lov faqat bir marta qayd etiladi (idempotentlik)
+        tx = MulticardTransaction.objects.select_for_update().get(pk=tx.pk)
         if tx.state == MulticardTransaction.PAID:
             return
 
-        tx.state = MulticardTransaction.PAID
-        tx.save(update_fields=['state', 'updated_at'])
+        payment_time = parse_datetime(str(data.get("payment_time") or ""))
+        if payment_time and timezone.is_naive(payment_time):
+            payment_time = timezone.make_aware(payment_time)
 
+        tx.state = MulticardTransaction.PAID
+        tx.payment_system = data.get("ps") or None
+        tx.payment_time = payment_time
+        tx.save(update_fields=[
+            "state", "payment_system", "payment_time", "updated_at",
+        ])
+
+        # Balans to'ldirish bo'lsa — foydalanuvchi balansini oshiramiz.
+        # Order to'lovi uchun qo'shimcha amal shart emas: serializer'lar
+        # to'lov holatini tx.state orqali aniqlaydi.
         if tx.topup_id:
-            topup = (
-                BalanceTopup.objects
-                .select_for_update()
-                .get(id=tx.topup_id)
-            )
+            topup = BalanceTopup.objects.select_for_update().get(id=tx.topup_id)
             if not topup.is_applied:
                 topup.user.balance += topup.amount
-                topup.user.save(update_fields=['balance'])
+                topup.user.save(update_fields=["balance"])
                 topup.is_applied = True
-                topup.save(update_fields=['is_applied', 'updated_at'])
+                topup.save(update_fields=["is_applied", "updated_at"])
+
+    def _apply_cancel(self, tx: MulticardTransaction) -> None:
+        if tx.state == MulticardTransaction.PAID:
+            # To'langan tranzaksiya 'revert' bo'lsa pulni avtomatik qaytarmaymiz —
+            # bu holat qo'lda ko'rib chiqilishi kerak
+            logger.warning(
+                "Multicard %s callback: PAID tranzaksiyaga revert keldi (uuid=%s)",
+                self.callback_kind, tx.transaction_id,
+            )
+            return
+        tx.state = MulticardTransaction.CANCELLED
+        tx.save(update_fields=["state", "updated_at"])
+
+
+class MulticardWebhookCallbackView(_MulticardCallbackBase):
+    """Multicard serveridan keladigan server-to-server webhook."""
+
+    callback_kind = "webhook"
+
+
+class MulticardSuccessCallbackView(_MulticardCallbackBase):
+    """To'lov muvaffaqiyatli yakunlanganda keladigan success callback."""
+
+    callback_kind = "success"

@@ -42,5 +42,10 @@ class MulticardTransaction(BaseModel):
     amount = models.DecimalField(max_digits=15, decimal_places=2)
     state  = models.IntegerField(choices=STATE_CHOICES, default=CREATED)
 
+    # Webhook'dan keladigan ma'lumotlar: qaysi tizim orqali ('uzcard',
+    # 'humo', ...) va qachon to'langani
+    payment_system = models.CharField(max_length=50, null=True, blank=True)
+    payment_time   = models.DateTimeField(null=True, blank=True)
+
     def __str__(self):
         return f"Multicard #{self.transaction_id} — {self.amount}"

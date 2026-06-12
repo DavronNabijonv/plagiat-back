@@ -74,14 +74,14 @@ class AiDocumentSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(
         serializers.ChoiceField(
-            choices=['tolandi', 'kutilyabdi', 'tolanmagan'],
+            choices=['paid', 'unpaid'],
             help_text="Order to'lov holati",
         )
     )
     def get_state(self, obj):
         order = obj.orders.filter(type="ai_document").first()
         if not order:
-            return 'tolanmagan'
+            return 'unpaid'
         return resolve_order_state(order)
 
     @extend_schema_field(serializers.IntegerField(allow_null=True))

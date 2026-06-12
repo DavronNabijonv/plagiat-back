@@ -16,7 +16,7 @@ from payme.views import PaymeWebHookAPIView
 
 from core.apps.shared.models import Order
 from core.apps.shared.models.multicard_transaction import MulticardTransaction
-from core.apps.users.views.multicard import _build_multicard_url
+from core.services.raxmat import RaxmatError, RaxmatService
 
 
 def _return_url(order: Order) -> str:
@@ -139,13 +139,12 @@ class PaymentLinkView(APIView):
             })
 
         try:
-            trans_id, pay_url = _build_multicard_url(
-                order_id=order.id,
-                amount_tiyin=int(order.total_price * 100),
+            trans_id, pay_url = RaxmatService().create_invoice(
+                amount=order.total_price,
+                invoice_id=order.id,
                 return_url=_return_url(order),
-                description=f"Anti-plagiat #{order.id}",
             )
-        except Exception as e:
+        except RaxmatError as e:
             return Response(
                 {"error": f"Multicard xatoligi: {e}"},
                 status=status.HTTP_502_BAD_GATEWAY,

@@ -9,33 +9,27 @@ from core.apps.shared.models import Order
 
 def resolve_order_state(order) -> str:
     """
-    Order obyektining to'lov holatini qaytaradi.
+    Order obyektining to'lov holatini qaytaradi: 'paid' yoki 'unpaid'.
     Yagona joy — qo'shilgan har bir provider shu yerda yangilanadi.
+    Frontend faqat shu ikki qiymatni biladi; invoice yaratilgan-u
+    to'lanmagan holat ham 'unpaid' (foydalanuvchi qayta to'lay oladi).
     """
     provider = order.payment_provider
 
     if provider == 'balance':
-        return 'tolandi'
+        return 'paid'
 
     if provider == 'multicard':
         tx = MulticardTransaction.objects.filter(order=order).last()
-        if not tx:
-            return 'tolanmagan'
-        if tx.state == MulticardTransaction.PAID:
-            return 'tolandi'
-        if tx.state == MulticardTransaction.CREATED:
-            return 'kutilyabdi'
-        return 'tolanmagan'
+        if tx and tx.state == MulticardTransaction.PAID:
+            return 'paid'
+        return 'unpaid'
 
     # payme yoki None (eski orderlar)
     tx = PaymeTransactions.objects.filter(account_id=order.id).last()
-    if not tx:
-        return 'tolanmagan'
-    if tx.state == 2:
-        return 'tolandi'
-    if tx.state == 1:
-        return 'kutilyabdi'
-    return 'tolanmagan'
+    if tx and tx.state == 2:
+        return 'paid'
+    return 'unpaid'
 
 
 class UnifiedOrderSerializer(serializers.Serializer):
@@ -70,7 +64,7 @@ class UnifiedOrderSerializer(serializers.Serializer):
 
     @extend_schema_field(
         serializers.ChoiceField(
-            choices=['tolandi', 'kutilyabdi', 'tolanmagan'],
+            choices=['paid', 'unpaid'],
             help_text="To'lov holati",
         )
     )
